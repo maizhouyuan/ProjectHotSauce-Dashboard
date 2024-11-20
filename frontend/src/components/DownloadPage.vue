@@ -32,7 +32,7 @@ export default {
   },
   methods: {
     downloadData() {
-      // 下载数据的逻辑
+      // Logic of downloading report
       alert(`Downloading data from ${this.startDate} to ${this.endDate} for field ${this.selectedField}`);
     },
   },

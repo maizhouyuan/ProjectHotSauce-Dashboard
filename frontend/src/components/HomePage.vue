@@ -1,31 +1,34 @@
-// THIS IS A SAMPLE HOMEPAGE
-
-<!-- frontend/src/components/HomePage.vue -->
+// frontend/src/components/HomePage.vue
 <template>
-  <div class="home-page">
-    <h1>Sensor Data</h1>
-    <ul>
-      <li v-for="(data, index) in sensorData" :key="index">
-        {{ data }}
-      </li>
-    </ul>
+  <div>
+    <h1>Sensor Readings</h1>
+    <div v-if="sensorData">
+      <ul>
+        <li v-for="sensor in sensorData" :key="sensor.id">
+          <p>Sensor ID: {{ sensor.id }}</p>
+          <p>Status: {{ sensor.status }}</p>
+          <p>Reading: {{ sensor.reading }}</p>
+        </li>
+      </ul>
+    </div>
+    <div v-else>
+      <p>Loading sensor data...</p>
+    </div>
   </div>
 </template>
 
 <script>
+import { getSensorData } from '../services';
+
 export default {
   name: 'HomePage',
   data() {
     return {
-      sensorData: [23.5, 21.7, 22.3, 20.1], // Simulate sensor data
+      sensors: [],
     };
+  },
+  mounted() {
+    this.sensors = getSensorData();
   },
 };
 </script>
-
-<style scoped>
-.home-page {
-  padding: 20px;
-}
-</style>
-
