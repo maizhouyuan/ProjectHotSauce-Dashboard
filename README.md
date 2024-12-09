@@ -15,23 +15,31 @@
 │ ├── routes/ # API route handlers
 │ ├── server.js # Main server file for starting the backend
 │ └── utils/ # Utility functions for backend logic
-└── frontend/ # Frontend (Vue.js) folder
-├── README.md # Frontend-specific documentation
-├── babel.config.js # Babel configuration for Vue.js
-├── jsconfig.json # JavaScript configuration for the project
-├── node_modules/ # Frontend dependencies
-├── package-lock.json # Frontend lock file for npm dependencies
-├── package.json # Frontend dependencies and scripts
-├── public/ # Static assets (index.html, icons, etc.)
-├── src/ # Vue.js source code (components, views, etc.)
-└── vue.config.js # Vue.js configuration file
+
+frontend/
+├── node_modules/          
+├── public/                
+├── src/                   
+│   ├── assets/            
+│   ├── components/        
+│   ├── pages/             
+│   ├── styles/            
+│   │   └── index.css      
+│   ├── App.jsx            
+│   ├── main.jsx           
+├── .gitignore             
+├── eslint.config.js       
+├── index.html             
+├── package-lock.json      
+├── package.json           
+└── vite.config.js        
 ```
 
 
 ### Key Directories:
 - **`backend/routes/`**: Contains route handlers for different API endpoints.
 - **`backend/utils/`**: Utility functions used by the backend services.
-- **`frontend/src/`**: Contains Vue.js source files, including components, views, and other frontend logic.
+- **`frontend/src/`**: Contains source files, including components, views, and other frontend logic.
 - **`frontend/public/`**: Static assets such as HTML files and icons that are served directly.
 
 ## Getting Started
@@ -58,11 +66,11 @@ Install backend dependencies:```npm install```\
 Start the backend server:```npm start```\
 The backend server should now be running on http://localhost:5001
 
-#### 4. Backend Setup:
+#### 4. Frontend Setup:
 Open a new terminal window or tab, then navigate into the frontend folder:```cd frontend```\
 Install frontend dependencies:```npm install```\
-Start the frontend development server: ```npm run serve```\
-The frontend should now be running on http://localhost:8080
+Start the frontend development server: ```npm run dev```\
+The frontend should now be running on http://localhost:5173/
 
 ### Dependencies
 This project uses several key dependencies in both the backend and frontend.
@@ -71,9 +79,6 @@ This project uses several key dependencies in both the backend and frontend.
 **Axios**: For making HTTP requests from the server.\
 You can view all backend dependencies in ```backend/package.json```.
 #### Frontend Dependencies:
-**Vue.js**: JavaScript framework for building user interfaces.\
-**Vue Router**: For handling routing within the Vue application.\
-**Axios**: For making HTTP requests from the client-side.\
 You can view all frontend dependencies in ```frontend/package.json```.
 
 ## Contribution Guidelines

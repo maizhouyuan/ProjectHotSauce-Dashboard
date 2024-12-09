@@ -1,0 +1,13 @@
+/* Full-page layout container */
+.layout-container {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    background: url("../assets/background.jpg") no-repeat center center;
+    background-size: 100% 100%;
+    background-attachment: fixed;
+    z-index: -1;
+    overflow: hidden; /* Prevent scrollbars if content overflows */
+}
