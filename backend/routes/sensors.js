@@ -1,16 +1,44 @@
 const express = require('express');
 const router = express.Router();
+const { getSensorsByFloor, addNoteToSensor } = require('../utils/dynamoDB');
 
-// Mock data to simulate DynamoDB query results
-const mockSensorData = [
-  { sensorId: '1', status: 'active', reading: 23.5, timestamp: '2024-11-19T10:00:00Z' },
-  { sensorId: '2', status: 'inactive', reading: 0, timestamp: '2024-11-19T10:00:00Z' },
-  { sensorId: '3', status: 'active', reading: 18.2, timestamp: '2024-11-19T10:00:00Z' },
-];
+// Get all sensors grouped by floor
+router.get('/', async (req, res) => {
+    try {
+        const sensors = await getSensorsByFloor();
+        res.status(200).json({
+            success: true,
+            data: sensors
+        });
+    } catch (error) {
+        console.error('Sensors route error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch sensors data',
+            error: error.message
+        });
+    }
+});
 
-// Get sensor data (simulating a DynamoDB query)
-router.get('/', (req, res) => {
-  res.json(mockSensorData);  // Return mock data
+// Add note to a sensor
+router.post('/:sensorId/notes', async (req, res) => {
+    try {
+        const { sensorId } = req.params;
+        const { note } = req.body;
+        
+        const updatedSensor = await addNoteToSensor(sensorId, note);
+        res.status(200).json({
+            success: true,
+            data: updatedSensor
+        });
+    } catch (error) {
+        console.error('Add note error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to add note',
+            error: error.message
+        });
+    }
 });
 
 module.exports = router;
