@@ -3,7 +3,7 @@ import React from 'react';
 const SensorsPage = () => {
   return (
     <div>
-      <p>Content</p>
+      <p>Content Placeholder</p>
     </div>
   );
 };
