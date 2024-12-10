@@ -5,7 +5,7 @@ import SensorsPage from "./pages/SensorsPage";
 import ReportsPage from "./pages/ReportsPage";
 import LoginPage from "./pages/LoginPage";
 import LogoutPage from "./pages/LogoutPage";
-// import SettingsPage from "./pages/SettingsPage";
+import SettingsPage from "./pages/SettingsPage";
 import Layout from "./components/Layout";
 
 const router = createBrowserRouter([
@@ -45,12 +45,12 @@ const router = createBrowserRouter([
         <LogoutPage />
     ),
   },
-  // {
-  //   path: "/settings",
-  //   element: (
-  //       <SettingsPage />
-  //   ),
-  // },
+  {
+    path: "/settings",
+    element: (
+        <SettingsPage />
+    ),
+  },
 ]);
 
 const App = () => {
