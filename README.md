@@ -42,6 +42,11 @@ frontend/
 - **`frontend/src/`**: Contains source files, including components, views, and other frontend logic.
 - **`frontend/public/`**: Static assets such as HTML files and icons that are served directly.
 
+## Deployment
+
+The application is live and accessible at the following URL:
+[Project Hot Sauce Dashboard](https://projecthotsauce-dashboard.onrender.com)
+
 ## Getting Started
 
 To start contributing, follow these steps to set up both the backend and frontend on your local machine.
