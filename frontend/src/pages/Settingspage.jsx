@@ -1,11 +1,5 @@
-import React from 'react';
-
 const SettingsPage = () => {
-  return (
-    <div>
-      <p>content</p>
-    </div>
-  );
+  <div>Settings Page Placeholder</div>;
 };
 
-export default SettingsPage;
+export default SettingsPage; 
