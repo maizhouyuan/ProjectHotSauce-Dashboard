@@ -1,9 +1,23 @@
-import React from 'react';
+// pages/SensorsPage.jsx
+import React, { useState } from 'react';
+import SensorGrid from '../components/SensorGrid';
+import SensorDetails from '../components/SensorDetails';
+import '../styles/SensorsPage.css';
 
 const SensorsPage = () => {
+  const [selectedSensor, setSelectedSensor] = useState(null);
+
+  const handleSensorClick = (sensor) => {
+    setSelectedSensor(sensor);
+  };
+
   return (
-    <div>
-      <p>Content Placeholder</p>
+    <div className="sensors-page">
+      <div className="sensors-container">
+        <h1>Sensors by Floors</h1>
+        <SensorGrid onSensorClick={handleSensorClick} />
+      </div>
+      <SensorDetails sensor={selectedSensor} />
     </div>
   );
 };
