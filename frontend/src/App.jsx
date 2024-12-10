@@ -4,8 +4,8 @@ import DashboardPage from "./pages/DashboardPage";
 import SensorsPage from "./pages/SensorsPage";
 import ReportsPage from "./pages/ReportsPage";
 import LoginPage from "./pages/LoginPage";
-import LoginPage from "./pages/LogoutPage";
-import LoginPage from "./pages/SettingsPage";
+import LogoutPage from "./pages/LogoutPage";
+import SettingsPage from "./pages/SettingsPage";
 import Layout from "./components/Layout";
 
 const router = createBrowserRouter([
