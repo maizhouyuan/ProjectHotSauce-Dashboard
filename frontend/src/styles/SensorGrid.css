@@ -1,0 +1,59 @@
+/* styles/SensorGrid.css */
+.sensor-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .floor-section {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  
+  .floor-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    width: 40px;
+  }
+  
+  .sensors-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .sensor-card {
+    background: #d3d3d3;
+    border-radius: 10px;
+    padding: 1rem;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .sensor-card.error {
+    background: #fff;
+    border: 2px solid #ff4444;
+  }
+  
+  .status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+  }
+  
+  .status-indicator.active {
+    background: #4CAF50;
+  }
+  
+  .status-indicator.error {
+    background: #ff4444;
+  }

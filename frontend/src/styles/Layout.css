@@ -1,13 +1,21 @@
-/* Full-page layout container */
+/* Layout container: Contains left navigation bar and main content */
 .layout-container {
-    position: absolute;
-    width: 100vw;
-    height: 100vh;
-    top: 0;
-    left: 0;
-    background: url("../assets/background.jpg") no-repeat center center;
-    background-size: 100% 100%;
-    background-attachment: fixed;
-    z-index: -1;
-    overflow: hidden; /* Prevent scrollbars if content overflows */
+    display: flex;
+    min-height: 100vh;
+    background-image: url("../assets/background.jpg"); /* Background image */
+    background-size: cover;
+    background-position: center;
+}
+
+/* Main content area */
+.main-content {
+    flex: 1;
+    margin-left: 250px; /* Width of left navigation bar */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Page content area */
+.page-content {
+    padding: 2rem;
 }

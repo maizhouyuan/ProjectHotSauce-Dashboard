@@ -1,0 +1,13 @@
+/* styles/SensorsPage.css */
+.sensors-page {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 2rem;
+    padding: 2rem;
+  }
+  
+  .sensors-container {
+    background: #f5f5f5;
+    border-radius: 10px;
+    padding: 2rem;
+  }

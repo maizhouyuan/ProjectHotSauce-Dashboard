@@ -1,0 +1,78 @@
+/* styles/ReportView.css */
+.report-view {
+    background-color: #b22222;
+    padding: 2rem;
+    border-radius: 15px;
+    color: white;
+    max-width: 900px;
+    margin: 2rem auto;
+  }
+  
+  .report-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .back-button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .back-button:before {
+    content: "←";
+  }
+  
+  .sensor-data {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  
+  .sensor-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+  }
+  
+  .sensor-card h3 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+  
+  .data-list {
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  
+  .date-range {
+    background: white;
+    color: black;
+    padding: 0.5rem 2rem;
+    border-radius: 20px;
+    display: inline-block;
+    margin: 1rem auto;
+  }
+  
+  .download-button {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #b22222;
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: block;
+    margin: 2rem auto 0;
+    font-weight: bold;
+  }

@@ -1,0 +1,77 @@
+.left-navbar {
+    width: 250px;
+    height: 100vh;
+    background-color: #1a1a1a;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    padding-top: 1.5rem; /* Added top padding */
+  }
+  
+  .logo-container {
+    padding: 0 1.5rem 2rem 1.5rem; /* Adjusted padding */
+  }
+  
+  .nu-logo {
+    width: 45px; /* Smaller logo size */
+    height: auto;
+  }
+  
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    padding: 0; /* Removed padding */
+    margin-top: 1rem;
+  }
+  
+  .nav-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 2rem;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    opacity: 0.7; /* Default state slightly transparent */
+  }
+  
+  .nav-item.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    opacity: 1;
+    border-left: 3px solid #ffcc00; /* Yellow indicator for active state */
+  }
+  
+  .nav-item:hover {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  .bottom-buttons {
+    margin-top: auto;
+    padding: 2rem;
+    display: flex;
+    gap: 1rem; /* Space between buttons */
+  }
+  
+  .settings-button, .logout-button {
+    background-color: #333;
+    border: none;
+    border-radius: 12px; /* Square with rounded corners */
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .settings-button:hover, .logout-button:hover {
+    background-color: #444;
+    transform: translateY(-2px); /* Slight lift effect */
+  }
