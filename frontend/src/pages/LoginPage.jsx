@@ -1,7 +1,19 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/LoginPage.css";
 
+/**
+ * Admin account details
+ * Username: 225Terry
+ */
 const LoginPage = () => {
+    const navigate = useNavigate();
+
+    // navigate to DashboardPage
+    const handleVisitorMode = () => {
+      navigate("/dashboard"); 
+    };
+
     return (
       <div className="login-page">
         <div className="login-bg"></div>
@@ -31,6 +43,9 @@ const LoginPage = () => {
             </div>
             <button type="submit" className="login-button">Log in</button>
           </form>
+          <button onClick={handleVisitorMode} className="visitor-button">
+          Visitor
+        </button>
         </div>
       </div>
     );

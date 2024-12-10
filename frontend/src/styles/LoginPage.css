@@ -116,3 +116,22 @@
 .login-button:hover {
     background: #3a8e31;
 }
+
+.visitor-button {
+    width: 150px;
+    height: 40px;
+    background: #eab22d; 
+    color: #ffffff;
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25), inset 4px 6px 4px rgba(0, 0, 0, 0.5);
+}
+
+.visitor-button:hover {
+    background: #0056b3; 
+}
