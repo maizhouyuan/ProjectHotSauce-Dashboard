@@ -1,7 +1,7 @@
 .left-navbar {
-    width: 250px;
+    width: 300px;
     height: 100vh;
-    background-color: #1a1a1a;
+    background-color: rgba(0, 0, 0, 0.5);;
     color: white;
     display: flex;
     flex-direction: column;
@@ -9,16 +9,21 @@
     left: 0;
     top: 0;
     z-index: 1000;
-    padding-top: 1.5rem; /* Added top padding */
+    padding-top: 6rem; /* Added top padding */
+    border-radius: 20px;
   }
   
   .logo-container {
-    padding: 0 1.5rem 2rem 1.5rem; /* Adjusted padding */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0 1.5rem 2rem 1.5rem;
   }
-  
+    
   .nu-logo {
     width: 45px; /* Smaller logo size */
     height: auto;
+    border-radius: 0px;
   }
   
   .nav-links {
@@ -31,17 +36,21 @@
   .nav-item {
     display: flex;
     align-items: center;
-    padding: 1rem 2rem;
+    justify-content: center;
+    width: 80%;
+    padding: 2rem 2rem;
     color: #ffffff;
     text-decoration: none;
-    font-size: 1rem;
+    font-size: 1.2rem;
     transition: all 0.3s ease;
-    opacity: 0.7; /* Default state slightly transparent */
+    opacity: 0.7;
   }
   
   .nav-item.active {
     background-color: rgba(255, 255, 255, 0.1);
     opacity: 1;
+    border-left: none;
+    color: #ffcc00;
     border-left: 3px solid #ffcc00; /* Yellow indicator for active state */
   }
   
@@ -54,7 +63,9 @@
     margin-top: auto;
     padding: 2rem;
     display: flex;
-    gap: 1rem; /* Space between buttons */
+    justify-content: center;
+    gap: 0.5rem; /* Space between buttons */
+    padding-bottom: 20rem; 
   }
   
   .settings-button, .logout-button {

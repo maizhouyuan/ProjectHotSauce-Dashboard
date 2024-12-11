@@ -4,10 +4,10 @@ import "../styles/Header.css";
 const Header = ({ title }) => {
   return (
     <header className="header">
-      {/* 页面标题 */}
+      {/* Page Title */}
       <h1>{title}</h1>
 
-      {/* 搜索框 */}
+      {/* Search Bar */}
       <div className="search-container">
         <input 
           type="text" 

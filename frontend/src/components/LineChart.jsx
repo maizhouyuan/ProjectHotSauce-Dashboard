@@ -45,6 +45,8 @@ const LineChart = ({ data = [] }) => {
 
   const options = {
     responsive: true,
+    aspectRatio: 4,
+    maintainAspectRatio: true,
     plugins: {
       legend: {
         position: 'top',
