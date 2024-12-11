@@ -6,12 +6,12 @@ import nuLogo from "../assets/NU_White_Red_Logo.jpg";
 const LeftNavBar = () => {
   return (
     <div className="left-navbar">
-      {/* Northeastern Logo */}
+      {/* Northeastern University Logo */}
       <div className="logo-container">
         <img src={nuLogo} alt="NU Logo" className="nu-logo" />
       </div>
 
-      {/* 导航链接 */}
+      {/* Navigation links */}
       <nav className="nav-links">
         <NavLink to="/dashboard" className="nav-item" activeClassName="active">
           Dashboard
@@ -24,7 +24,7 @@ const LeftNavBar = () => {
         </NavLink>
       </nav>
 
-      {/* 底部按钮 */}
+      {/* Bottom buttons */}
       <div className="bottom-buttons">
         <button className="settings-button">⚙️</button>
         <button className="logout-button">🚪</button>

@@ -1,6 +1,7 @@
 /* styles/DashboardPage.css */
 .dashboard-container {
-    padding: 20px;
+    padding: 10px 0;
+    margin-left: 100px;
     display: grid;
     gap: 20px;
     grid-template-columns: 1fr 300px;
@@ -9,7 +10,11 @@
   .charts-container {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
+    width: 100%;
+    width: 700px;
+    height: auto;
+    margin: 0 auto;
   }
   
   .chart-wrapper {
@@ -17,6 +22,7 @@
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: 100%;
   }
   
   /* styles/DashboardCards.css */

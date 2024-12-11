@@ -4,14 +4,17 @@
     align-items: center;
     padding: 2rem 2.5rem; /* Increased padding to match design */
     background-color: transparent;
+    position: relative; 
     font-family: 'Arial', sans-serif;
   }
   
   .header h1 {
     font-size: 2rem; /* Adjusted size to match design */
     font-weight: 600; /* Semi-bold weight */
+    padding: 1rem 4rem;
     color: #000;
     margin: 0;
+
   }
   
   .search-container {

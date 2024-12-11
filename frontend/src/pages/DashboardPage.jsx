@@ -60,8 +60,6 @@ const DashboardPage = () => {
       </div>
 
       {/* Real-time Data Cards */}
-
-
       <div className="cards-container">
         <DashboardCards
           temperature={realTimeData.temperature}
