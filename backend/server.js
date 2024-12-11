@@ -1,6 +1,13 @@
 const express = require('express');
 const app = express();
 const homepageRoutes = require('./routes/homepage');
+const cors = require('cors');
+
+app.use(cors({
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'], 
+}));
 
 // Middleware
 app.use(express.json());

@@ -1,4 +1,3 @@
-// components/LineChart.jsx
 import React from 'react';
 import { Line } from 'react-chartjs-2';
 import {
@@ -22,21 +21,24 @@ ChartJS.register(
   Legend
 );
 
-const LineChart = () => {
-  const data = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+const LineChart = ({ data = [] }) => {
+  // Check if data is valid
+  if (!Array.isArray(data) || data.length === 0) {
+    return <div>Loading temperature data...</div>;
+  }
+
+  const chartData = {
+    // X-axis: months
+    labels: data.map(item => item.month),
     datasets: [
       {
-        label: 'Temperature 2024',
-        data: [15, 17, 16, 14, 10, 17, 15, 14, 16, 15, 14, 15],
-        borderColor: 'rgb(255, 99, 71)',
-        tension: 0.4
-      },
-      {
-        label: 'Temperature 2023',
-        data: [8, 12, 12, 12, 6, 13, 12, 11, 12, 10, 9, 10],
-        borderColor: 'rgb(255, 165, 0)',
-        tension: 0.4
+        label: 'Monthly Average Temperature (°C)',
+        // Y-axis: temperature values
+        data: data.map(item => item.avgTemperature),
+        borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        tension: 0.3,
+        fill: true
       }
     ]
   };
@@ -45,25 +47,36 @@ const LineChart = () => {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top'
+        position: 'top',
       },
       title: {
         display: true,
-        text: 'Temperature'
+        text: 'Monthly Temperature Trends'
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => `Temperature: ${context.parsed.y}°C`
+        }
       }
     },
     scales: {
       y: {
-        min: 0,
-        max: 25,
-        ticks: {
-          stepSize: 5
+        beginAtZero: false,
+        title: {
+          display: true,
+          text: 'Temperature (°C)'
+        }
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Month'
         }
       }
     }
   };
 
-  return <Line data={data} options={options} />;
+  return <Line data={chartData} options={options} />;
 };
 
 export default LineChart;
