@@ -1,59 +1,58 @@
-/* styles/SensorGrid.css */
 .sensor-grid {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-  }
-  
-  .floor-section {
+    gap: 1.5rem; /* Reduce vertical gap between floors */
+}
+
+.floor-section {
     display: flex;
-    gap: 1rem;
+    gap: 0.5rem; /* Reduce gap between floor number and sensors */
     align-items: center;
-  }
-  
-  .floor-number {
-    font-size: 1.5rem;
+}
+
+.floor-number {
+    font-size: 1.2rem; /* Decrease font size for floor numbers */
     font-weight: bold;
-    width: 40px;
-  }
-  
-  .sensors-row {
+    width: 30px; /* Reduce width for floor numbers */
+}
+
+.sensors-row {
     display: flex;
-    gap: 1rem;
+    gap: 0.5rem; /* Reduce horizontal gap between sensor cards */
     flex-wrap: wrap;
-  }
-  
-  .sensor-card {
+}
+
+.sensor-card {
     background: #d3d3d3;
     border-radius: 10px;
-    padding: 1rem;
-    width: 120px;
-    height: 120px;
+    padding: 0.8rem; /* Reduce padding inside each card */
+    width: 100px; /* Decrease card width */
+    height: 80px; /* Decrease card height */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     cursor: pointer;
     position: relative;
-  }
-  
-  .sensor-card.error {
+}
+
+.sensor-card.error {
     background: #fff;
-    border: 2px solid #ff4444;
-  }
-  
-  .status-indicator {
-    width: 10px;
-    height: 10px;
+    border: 2px solid #A92424; /* Keep error styling consistent */
+}
+
+.status-indicator {
+    width: 8px; /* Reduce size of status indicator */
+    height: 8px; /* Reduce size of status indicator */
     border-radius: 50%;
     position: absolute;
-    bottom: 10px;
-    right: 10px;
-  }
-  
-  .status-indicator.active {
-    background: #4CAF50;
-  }
-  
-  .status-indicator.error {
-    background: #ff4444;
-  }
+    bottom: 8px; /* Adjust positioning to fit smaller cards */
+    right: 8px;
+}
+
+.status-indicator.active {
+    background: #4CAF50; /* Keep active status color */
+}
+
+.status-indicator.error {
+    background: #A92424; /* Keep error status color */
+}

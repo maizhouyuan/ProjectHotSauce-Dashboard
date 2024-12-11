@@ -6,13 +6,13 @@ import "../styles/Layout.css";
 const Layout = ({ title, children }) => {
   return (
     <div className="layout-container">
-      {/* 左侧导航栏 */}
+      {/* Left navigation bar */}
       <LeftNavBar />
-      {/* 主内容区域 */}
+      {/* Main content area */}
       <div className="main-content">
-        {/* 顶部标题 */}
+        {/* Top header with title */}
         <Header title={title} />
-        {/* 页面主要内容 */}
+        {/* Page's primary content */}
         <div className="page-content">{children}</div>
       </div>
     </div>
