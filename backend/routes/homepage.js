@@ -1,32 +1,47 @@
 const express = require('express');
 const router = express.Router();
-const { getYearlyData, getDashboardMetrics } = require('../utils/dynamoDB');
+const dynamodb = require('../utils/dynamodb');
 
-router.get('/', async (req, res) => {
+// Get all homepage data
+router.get('/data', async (req, res) => {
     try {
-        const sensorId = "fcf5c497654a";  // Hardcoded sensor ID
-        const year = req.query.year || new Date().getFullYear().toString();
+        // Define default sensor ID (you might want to make this configurable)
+        const defaultSensorId = 'sensor-001';
+        const currentYear = new Date().getFullYear().toString();
 
-        console.log('Processing request for:', { sensorId, year });
+        // Get all required data in parallel
+        const [yearlyData, realTimeData, sensorCounts] = await Promise.all([
+            dynamodb.getYearlyAverages(defaultSensorId, currentYear),
+            dynamodb.getRealTimeData(defaultSensorId),
+            dynamodb.getSensorCounts()
+        ]);
 
-        const yearlyData = await getYearlyData(sensorId, year);
-        const metrics = await getDashboardMetrics();
-
-        console.log('Sending response with data');
-        res.status(200).json({
-            success: true,
-            data: {
-                yearlyData,
-                metrics,
+        // Format response
+        const response = {
+            yearlyData: {
+                temperature: yearlyData.map(item => ({
+                    month: item.month,
+                    value: item.avgTemperature
+                })),
+                co2: yearlyData.map(item => ({
+                    month: item.month,
+                    value: item.avgCO2
+                }))
             },
-        });
+            realTimeData: {
+                temperature: realTimeData ? realTimeData.Temperature : null,
+                pm25: realTimeData ? realTimeData['PM2.5'] : null
+            },
+            sensorCounts: {
+                total: sensorCounts.totalSensors,
+                working: sensorCounts.workingSensors
+            }
+        };
+
+        res.json(response);
     } catch (error) {
-        console.error('Homepage route error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch homepage data',
-            error: error.message,
-        });
+        console.error('Error fetching homepage data:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
