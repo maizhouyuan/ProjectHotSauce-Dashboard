@@ -14,18 +14,33 @@ const DashboardPage = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await fetch('/api/homepage/data'); // API endpoint
+        // Calculate dynamic date range for current month and past 12 months
+        const now = new Date();
+        const endDate = now.toISOString().split('T')[0];
+        const startDate = new Date(now.getFullYear(), now.getMonth() - 11, 1)
+          .toISOString()
+          .split('T')[0];
+
+        console.log(`Fetching data from ${startDate} to ${endDate}`);
+
+        // Fetch temperature data
+        const response = await fetch(`/api/weather/monthly-average?latitude=47.6062&longitude=-122.3321&start_date=${startDate}&end_date=${endDate}`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
 
         // Format temperature data for LineChart
-        const formattedTemperatureData = data.yearlyData.temperature.map(item => ({
+        const formattedTemperatureData = data.map(item => ({
           month: item.month,
-          avgTemperature: item.value,
+          avgTemperature: item.avgTemperature,
         }));
 
+        // Fetch CO2 and other data
+        const homepageResponse = await fetch('/api/homepage/data');
+        if (!homepageResponse.ok) throw new Error(`HTTP error! status: ${homepageResponse.status}`);
+        const homepageData = await homepageResponse.json();
+
         // Format CO2 data for BarChart
-        const formattedCo2Data = data.yearlyData.co2.map(item => ({
+        const formattedCo2Data = homepageData.yearlyData.co2.map(item => ({
           month: item.month,
           value: item.value,
         }));
@@ -33,8 +48,8 @@ const DashboardPage = () => {
         // Set state with API data
         setTemperatureData(formattedTemperatureData);
         setCo2Data(formattedCo2Data);
-        setRealTimeData(data.realTimeData);
-        setSensorCounts(data.sensorCounts);
+        setRealTimeData(homepageData.realTimeData);
+        setSensorCounts(homepageData.sensorCounts);
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       } finally {
@@ -44,6 +59,8 @@ const DashboardPage = () => {
 
     fetchDashboardData();
   }, []);
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <div className="dashboard-container">
