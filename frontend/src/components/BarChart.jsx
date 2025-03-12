@@ -10,17 +10,17 @@ import {
   Legend
 } from 'chart.js';
 
+//ADDED
+// Import the annotation plugin for threshold line
+import annotationPlugin from 'chartjs-plugin-annotation';
+
 // Register necessary Chart.js components
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, annotationPlugin);
 
 const BarChart = ({ data }) => {
   // List of all months in the range
-  // THIS SHOULDN'T BE HARDCODED, FIX IT!
-  const allMonths = [
-    '2024-06', '2024-07', '2024-08', '2024-09', '2024-10', '2024-11',
-    '2024-12', // Mid-year months
-    '2025-01', '2025-02', '2025-03', '2025-04', '2025-05'
-  ];
+  // fixing hard-coded month
+  const allMonths = [...new Set(data.map(item => item.month))];
 
   // Create an object to initialize all months with a default value of 0
   const monthDataMap = {};
@@ -38,6 +38,10 @@ const BarChart = ({ data }) => {
   // Extract labels (months) and values (data) for the chart
   const labels = Object.keys(monthDataMap);
   const values = Object.values(monthDataMap);
+
+  // ADDED: Example threshold
+  // Define threshold value
+  const threshold = 0.5;
 
   // Configure the data for the bar chart
   const chartData = {
@@ -57,12 +61,33 @@ const BarChart = ({ data }) => {
     ],
   };
 
-  // Configure the chart options
+  // Configure the chart options with threshold line
   const options = {
     responsive: true,
     plugins: {
       legend: { position: 'top' }, // Place the legend at the top
       title: { display: true, text: 'Yearly CO2 Levels' }, // Chart title
+
+      //add the threshold line
+      annotation: {
+        annotations: {
+          line1: { // ADDED: Horizontal threshold line
+            type: 'line',
+            yMin: threshold,
+            yMax: threshold,
+            borderColor: 'red',
+            borderWidth: 2,
+            borderDash: [5, 5], // Makes it dashed
+            label: {
+              display: true,
+              content: `Threshold: ${threshold} ppm`,
+              //label displayed at the end of the line
+              position: 'end',
+              backgroundColor: 'rgba(255, 0, 0, 0.5)',
+            },
+          },
+        },
+      },
     },
     scales: {
       y: { title: { display: true, text: 'ppm' } }, // Label for the y-axis
