@@ -168,31 +168,41 @@ const ReportsPage = () => {
     return isValid;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validateForm()) {
-      return;
+        return;
     }
 
-    // Create formatted date range string
-    const formattedDateRange = `${formatDate(dateRange[0].startDate)} - ${formatDate(dateRange[0].endDate)}`;
+    const formattedStartDate = format(dateRange[0].startDate, "yyyy-MM-dd HH:mm:ss");
+    const formattedEndDate = format(dateRange[0].endDate, "yyyy-MM-dd HH:mm:ss");
 
-    // Create mock data based on selected sensors
-    const mockData = {
-      dateRange: formattedDateRange
-    };
+    try {
+        const response = await fetch("http://localhost:3000/api/reports/generate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                sensorIds: selectedSensors.map(sensor => sensor.value),
+                reportType,
+                startTime: formattedStartDate,
+                endTime: formattedEndDate
+            }),
+        });
 
-    // Add data for each selected sensor
-    selectedSensors.forEach(sensor => {
-      mockData[sensor.value] = [
-        { date: '11/04/2025', ppm: Math.floor(Math.random() * 300) + 400, temperature: Math.floor(Math.random() * 5) + 68 },
-        { date: '11/05/2025', ppm: Math.floor(Math.random() * 300) + 400, temperature: Math.floor(Math.random() * 5) + 68 },
-        { date: '11/06/2025', ppm: Math.floor(Math.random() * 300) + 400, temperature: Math.floor(Math.random() * 5) + 68 },
-        { date: '11/07/2025', ppm: Math.floor(Math.random() * 300) + 400, temperature: Math.floor(Math.random() * 5) + 68 }
-      ];
-    });
+        const result = await response.json();
+        console.log("API Response:", JSON.stringify(result, null, 2));
 
-    setReportData(mockData);
-    setShowReport(true);
+        if (result.success) {
+            console.log("Processed Report Data:", result.data.reportData);
+            setReportData(result.data.reportData);
+            setShowReport(true);
+        } else {
+            console.error("Report generation failed:", result.message);
+        }
+    } catch (error) {
+        console.error("Error fetching report:", error);
+    }
   };
 
   return (
@@ -301,15 +311,20 @@ const ReportsPage = () => {
               {selectedSensors.map(sensor => (
                 <div key={sensor.value} className="sensor-card">
                   <h3>{sensor.label}</h3>
-                  {reportData?.[sensor.value].map((data, index) => (
-                    <div key={index} className="data-row">
-                      {data.date} | ppm {data.ppm} | Temperature {data.temperature}
-                    </div>
-                  ))}
+                  {Array.isArray(reportData) && reportData.length > 0 ? (
+                    reportData
+                      .filter(data => data["Sensor ID"] === sensor.value)
+                      .map((data, index) => (
+                        <div key={index} className="data-row">
+                          {data.Timestamp} | Temperature: {data.Temperature}°C | CO2: {data.CO2} ppm | PM2.5: {data["PM2.5"]} | Humidity: {data.Humidity}%
+                        </div>
+                      ))
+                  ) : (
+                    <p>No data available for this sensor.</p>
+                  )}
                 </div>
               ))}
             </div>
-            
             <div className="date-range">
               {reportData?.dateRange}
             </div>
