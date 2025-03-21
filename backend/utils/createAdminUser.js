@@ -2,8 +2,8 @@ const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, PutCommand } = require("@aws-sdk/lib-dynamodb");
 const bcrypt = require("bcrypt");
 require("dotenv").config({ path: "../.env" });
-console.log("ADMIN_USERNAME:", process.env.ADMIN_USERNAME);//debug
-console.log("ADMIN_PASSWORD:", process.env.ADMIN_PASSWORD);//debug
+//console.log("ADMIN_USERNAME:", process.env.ADMIN_USERNAME);//debug
+//console.log("ADMIN_PASSWORD:", process.env.ADMIN_PASSWORD);//debug
 
 // connect DynamoDB
 const client = new DynamoDBClient({
