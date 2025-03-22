@@ -157,3 +157,15 @@
   .register-nav-button:hover {
     background: #005fa3;
   }
+
+  .checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #333;
+    padding-left: 8px;
+  }
+  

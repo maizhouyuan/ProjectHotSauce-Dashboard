@@ -7,8 +7,9 @@ const LoginPage = () => {
     const [username, setUsername] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [error, setError] = React.useState("");
+    const [rememberMe, setRememberMe] = React.useState(false);
 
-    console.log("LoginPage is rendering");//debug
+    //console.log("LoginPage is rendering");//debug
 
     // visitor mode
     const handleVisitorMode = () => {
@@ -25,7 +26,7 @@ const LoginPage = () => {
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({ username, password })
+          body: JSON.stringify({ username, password, rememberMe })
         });
   
         const data = await res.json();
@@ -73,6 +74,16 @@ const LoginPage = () => {
                 />
               </div>
             </div>
+
+            <div className="checkbox-container">
+              <input
+                type="checkbox"
+                id="rememberMe"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              <label htmlFor="rememberMe">Remember Me</label>
+          </div>
 
             {error && <p className="error-msg">{error}</p>}
 
