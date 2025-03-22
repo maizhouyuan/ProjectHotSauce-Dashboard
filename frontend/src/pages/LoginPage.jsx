@@ -8,6 +8,7 @@ const LoginPage = () => {
     const [password, setPassword] = React.useState("");
     const [error, setError] = React.useState("");
 
+    console.log("LoginPage is rendering");//debug
 
     // visitor mode
     const handleVisitorMode = () => {
@@ -77,12 +78,17 @@ const LoginPage = () => {
 
             <button type="submit" className="login-button">Log in</button>
           </form>
+
           <button onClick={handleVisitorMode} className="visitor-button">
-          Visitor
-        </button>
+            Visitor
+          </button>
+          <button onClick={() => navigate("/register")} className="register-nav-button">
+            Sign Up (Admin Only)
+          </button>
         </div>
       </div>
     );
+    
   };
   
   export default LoginPage;
