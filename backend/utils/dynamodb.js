@@ -197,7 +197,7 @@ module.exports = {
         await dynamoDB.send(new PutCommand(params));
         return { success: true, message: "User registered successfully" };
     } catch (error) {
-        console.error("❌ Error registering user:", error);
+        console.error("Error registering user:", error);
         throw error;
     }
 },
@@ -225,7 +225,7 @@ async authenticateUser(username, password) {
 
         return user;
     } catch (error) {
-        console.error("❌ Error authenticating user:", error);
+        console.error("Error authenticating user:", error);
         throw error;
     }
 },
