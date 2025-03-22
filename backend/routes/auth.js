@@ -7,11 +7,11 @@ const { registerUser, authenticateUser } = require("../utils/dynamodb");
 // Load environment variables from .env file
 dotenv.config();
 
-const generateToken = (user) => {
+const generateToken = (user, expiresIn = "1h") => {
   return jwt.sign(
-      { username: user.username, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+    { username: user.username, role: user.role },
+    process.env.JWT_SECRET,
+    { expiresIn }
   );
 };
 
@@ -33,7 +33,7 @@ router.post("/register", async (req, res) => {
 
 // Login
 router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, rememberMe } = req.body;
 
   try {
       const user = await authenticateUser(username, password);
@@ -41,11 +41,48 @@ router.post("/login", async (req, res) => {
           return res.status(401).json({ message: "Invalid username or password" });
       }
 
-      const token = generateToken(user);
-      res.json({ token });
+      const expiresIn = rememberMe ? "7d" : "1h"; //if click remember me,expire after 7 days; otherwise expire in 1 h 
+      const accessToken = generateToken(user, expiresIn);
+      //console.log(`[LOGIN] ${username} logged in. RememberMe: ${rememberMe} → Token Expiry: ${expiresIn}`);//debug
+
+      const refreshToken = jwt.sign(
+        { username: user.username, role: user.role },
+        process.env.JWT_REFRESH_SECRET,
+        { expiresIn: "7d" }
+      );
+  
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production" ? true : false, 
+        sameSite: "Strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+  
+      res.json({ token: accessToken });
   } catch (error) {
       res.status(500).json({ message: "Login failed", error });
   }
+});
+
+router.post("/refresh", (req, res) => {
+  const token = req.cookies.refreshToken;
+  if (!token) return res.status(401).json({ message: "No refresh token provided" });
+
+  jwt.verify(token, process.env.JWT_REFRESH_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: "Invalid refresh token" });
+
+    const accessToken = generateToken(user, "1h");
+    res.json({ token: accessToken });
+  });
+});
+
+router.post("/logout", (req, res) => {
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "Strict"
+  });
+  res.json({ message: "Logged out" });
 });
 
 
