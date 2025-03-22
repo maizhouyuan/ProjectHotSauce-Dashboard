@@ -1,11 +1,15 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const dotenv = require("dotenv");
+dotenv.config();
+//console.log("AWS REGION:", process.env.AWS_REGION);//debug
 
 const homepageRoutes = require('./routes/homepage');
 // Import the new weather routes
 const weatherRoutes = require('./routes/weatherRoutes');
 const reportRoutes = require('./routes/reports');
+const authRoutes = require("./routes/auth");
 
 app.use(cors({
     origin: 'http://localhost:5173',
@@ -23,6 +27,14 @@ app.use('/api/homepage', homepageRoutes);
 app.use('/api/weather', weatherRoutes);
 
 app.use('/api/reports', reportRoutes);
+
+app.use("/api/auth", authRoutes);
+
+//default response
+//http://localhost:3000/
+app.get("/", (req, res) => {
+    res.send("Backend server is running!");
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
