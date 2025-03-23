@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { generateReport, compareMultipleSensors } = require('../utils/dynamoDB');
+const { generateReport, compareMultipleSensors } = require('../utils/dynamodb.js');
 
 // Generate report for single or multiple sensors
 router.post('/generate', async (req, res) => {

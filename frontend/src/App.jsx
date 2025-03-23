@@ -6,13 +6,22 @@ import ReportsPage from "./pages/ReportsPage";
 import LoginPage from "./pages/LoginPage";
 import LogoutPage from "./pages/LogoutPage";
 import SettingsPage from "./pages/SettingsPage";
+import RegisterUserPage from "./pages/RegisterUserPage";
 import Layout from "./components/Layout";
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: (
         <LoginPage />
+    ),
+  },
+  {
+    path: "/register",
+    element: (
+        <RegisterUserPage />
     ),
   },
   {
