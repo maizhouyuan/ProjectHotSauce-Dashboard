@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -10,7 +10,6 @@ import {
   Legend
 } from 'chart.js';
 
-//ADDED
 // Import the annotation plugin for threshold line
 import annotationPlugin from 'chartjs-plugin-annotation';
 
@@ -18,45 +17,54 @@ import annotationPlugin from 'chartjs-plugin-annotation';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, annotationPlugin);
 
 const BarChart = ({ data }) => {
-  // Validate input data
-  if (!data || !Array.isArray(data)) {
-    return <div>No data available</div>;
-  }
+  const [selectedSensor, setSelectedSensor] = useState('sensor-001'); // Default sensor
+  const [chartData, setChartData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Validate each data point
-  const validData = data.filter(item => {
-    return (
-      item &&
-      typeof item.month === 'string' &&
-      typeof item.value === 'number' &&
-      !isNaN(item.value) &&
-      item.value >= 0
-    );
-  });
+  // Generate sensor options based on the total count
+  const generateSensorOptions = () => {
+    const totalSensors = data?.sensorCounts?.total || 10; // Default to 10 if not provided
+    return Array.from({ length: totalSensors }, (_, i) => {
+      const sensorNumber = (i + 1).toString().padStart(3, '0');
+      return `sensor-${sensorNumber}`;
+    });
+  };
 
-  if (validData.length === 0) {
-    return <div>No valid data available</div>;
-  }
-
-  // List of all months in the range
-  const allMonths = [...new Set(validData.map(item => item.month))].sort();
-
-  // Create an object to initialize all months with a default value of 0
-  const monthDataMap = {};
-  allMonths.forEach(month => {
-    monthDataMap[month] = 0;
-  });
-
-  // Override the default values with actual data
-  validData.forEach(item => {
-    if (monthDataMap[item.month] !== undefined) {
-      monthDataMap[item.month] = item.value;
+  // Process the data when it changes
+  useEffect(() => {
+    if (!data || !data.yearlyData || !data.yearlyData.co2) {
+      setError('No data available');
+      setIsLoading(false);
+      return;
     }
-  });
 
-  // Extract labels (months) and values (data) for the chart
-  const labels = Object.keys(monthDataMap);
-  const values = Object.values(monthDataMap);
+    try {
+      setIsLoading(true);
+      // Process the data for the chart
+      const processedData = {
+        labels: data.yearlyData.co2.map(item => item.month.substring(5)), // Get just the month part (MM)
+        datasets: [{
+          label: `CO2 Level (ppm) - ${selectedSensor}`,
+          data: data.yearlyData.co2.map(item => item.value),
+          backgroundColor: data.yearlyData.co2.map(item => {
+            if (item.value <= 450) return 'green';
+            if (item.value <= 700) return 'yellowgreen';
+            if (item.value <= 1000) return 'yellow';
+            if (item.value <= 2000) return 'orange';
+            return 'red';
+          }),
+        }]
+      };
+
+      setChartData(processedData);
+    } catch (error) {
+      console.error('Error processing chart data:', error);
+      setError('Failed to process data');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [data, selectedSensor]);
 
   // Define threshold values based on CO2 levels
   const thresholds = {
@@ -66,30 +74,12 @@ const BarChart = ({ data }) => {
     high: 2000      // High level
   };
 
-  // Configure the data for the bar chart
-  const chartData = {
-    labels: labels,
-    datasets: [
-      {
-        label: 'CO2 Level (ppm)',
-        data: values,
-        backgroundColor: values.map(value => {
-          if (value <= thresholds.safe) return 'green';
-          if (value <= thresholds.elevated) return 'yellowgreen';
-          if (value <= thresholds.moderate) return 'yellow';
-          if (value <= thresholds.high) return 'orange';
-          return 'red';
-        }),
-      },
-    ],
-  };
-
   // Configure the chart options with threshold lines
   const options = {
     responsive: true,
     plugins: {
       legend: { position: 'top' },
-      title: { display: true, text: 'Yearly CO2 Levels' },
+      title: { display: true, text: 'Monthly CO2 Levels' },
       annotation: {
         annotations: {
           safeThreshold: {
@@ -97,13 +87,10 @@ const BarChart = ({ data }) => {
             yMin: thresholds.safe,
             yMax: thresholds.safe,
             borderColor: 'green',
-            borderWidth: 2,
+            borderWidth: 3,
             borderDash: [5, 5],
             label: {
-              display: true,
-              content: `Safe: ${thresholds.safe} ppm`,
-              position: 'end',
-              backgroundColor: 'rgba(0, 255, 0, 0.5)',
+              display: false
             },
           },
           elevatedThreshold: {
@@ -111,13 +98,10 @@ const BarChart = ({ data }) => {
             yMin: thresholds.elevated,
             yMax: thresholds.elevated,
             borderColor: 'yellowgreen',
-            borderWidth: 2,
+            borderWidth: 3,
             borderDash: [5, 5],
             label: {
-              display: true,
-              content: `Elevated: ${thresholds.elevated} ppm`,
-              position: 'end',
-              backgroundColor: 'rgba(154, 205, 50, 0.5)',
+              display: false
             },
           },
           moderateThreshold: {
@@ -125,13 +109,10 @@ const BarChart = ({ data }) => {
             yMin: thresholds.moderate,
             yMax: thresholds.moderate,
             borderColor: 'yellow',
-            borderWidth: 2,
+            borderWidth: 3,
             borderDash: [5, 5],
             label: {
-              display: true,
-              content: `Moderate: ${thresholds.moderate} ppm`,
-              position: 'end',
-              backgroundColor: 'rgba(255, 255, 0, 0.5)',
+              display: false
             },
           },
           highThreshold: {
@@ -139,13 +120,10 @@ const BarChart = ({ data }) => {
             yMin: thresholds.high,
             yMax: thresholds.high,
             borderColor: 'orange',
-            borderWidth: 2,
+            borderWidth: 3,
             borderDash: [5, 5],
             label: {
-              display: true,
-              content: `High: ${thresholds.high} ppm`,
-              position: 'end',
-              backgroundColor: 'rgba(255, 165, 0, 0.5)',
+              display: false
             },
           }
         },
@@ -165,7 +143,61 @@ const BarChart = ({ data }) => {
     },
   };
 
-  return <Bar data={chartData} options={options} />;
+  if (error) return <div className="error">{error}</div>;
+  if (isLoading) return <div>Loading sensor data...</div>;
+  if (!chartData) return <div>No data available</div>;
+
+  return (
+    <div style={{ display: 'flex', gap: '20px' }}>
+      <div style={{ flex: 3 }}>
+        <div style={{ marginBottom: '20px', textAlign: 'right' }}>
+          <select 
+            value={selectedSensor} 
+            onChange={(e) => setSelectedSensor(e.target.value)}
+            style={{
+              padding: '8px',
+              fontSize: '14px',
+              borderRadius: '4px',
+              border: '1px solid #ccc',
+              backgroundColor: '#fff',
+              cursor: 'pointer'
+            }}
+          >
+            {generateSensorOptions().map(sensorId => (
+              <option key={sensorId} value={sensorId}>
+                Sensor {sensorId.split('-')[1]}
+              </option>
+            ))}
+          </select>
+        </div>
+        <Bar data={chartData} options={options} />
+      </div>
+      <div style={{ 
+        padding: '15px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        gap: '8px',
+        backgroundColor: '#ffffff',
+        borderRadius: '8px',
+        minWidth: '120px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+      }}>
+        <div style={{ color: 'green', fontWeight: 'bold', fontSize: '12px' }}>
+          Safe: {thresholds.safe} ppm
+        </div>
+        <div style={{ color: 'yellowgreen', fontWeight: 'bold', fontSize: '12px' }}>
+          Elevated: {thresholds.elevated} ppm
+        </div>
+        <div style={{ color: 'yellow', fontWeight: 'bold', fontSize: '12px' }}>
+          Moderate: {thresholds.moderate} ppm
+        </div>
+        <div style={{ color: 'orange', fontWeight: 'bold', fontSize: '12px' }}>
+          High: {thresholds.high} ppm
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default BarChart;

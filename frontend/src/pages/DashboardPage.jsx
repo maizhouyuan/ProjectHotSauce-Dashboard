@@ -6,7 +6,7 @@ import '../styles/DashboardPage.css';
 
 const DashboardPage = () => {
   const [temperatureData, setTemperatureData] = useState([]);
-  const [co2Data, setCo2Data] = useState([]);
+  const [co2Data, setCo2Data] = useState({});
   const [realTimeData, setRealTimeData] = useState({});
   const [sensorCounts, setSensorCounts] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -42,6 +42,7 @@ const DashboardPage = () => {
         const homepageResponse = await fetch('/api/homepage/data');
         if (!homepageResponse.ok) throw new Error(`HTTP error! status: ${homepageResponse.status}`);
         const homepageData = await homepageResponse.json();
+        console.log('Received homepage data:', homepageData);
 
         // Validate CO2 data
         const formattedCo2Data = homepageData.yearlyData.co2
@@ -53,11 +54,22 @@ const DashboardPage = () => {
 
         // Set state with API data
         setTemperatureData(formattedTemperatureData);
-        setCo2Data(formattedCo2Data);
+        setCo2Data({
+          yearlyData: {
+            co2: formattedCo2Data
+          }
+        });
+        console.log('Setting real-time data:', homepageData.realTimeData);
+        
+        // Get the most recent CO2 value from yearly data if realTimeData.co2 is not available
+        const mostRecentCo2 = formattedCo2Data.length > 0 
+          ? formattedCo2Data[formattedCo2Data.length - 1].value 
+          : null;
+
         setRealTimeData({
           temperature: homepageData.realTimeData.temperature,
           pm25: homepageData.realTimeData.pm25,
-          co2: homepageData.realTimeData.co2 // Add CO2 to real-time data
+          co2: homepageData.realTimeData.co2 || mostRecentCo2
         });
         setSensorCounts(homepageData.sensorCounts);
       } catch (error) {

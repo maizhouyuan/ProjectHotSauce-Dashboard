@@ -2,6 +2,8 @@ import React from 'react';
 import '../styles/DashboardCards.css';
 
 const DashboardCards = ({ temperature, pm25, co2, totalSensors, workingSensors }) => {
+  console.log('DashboardCards received CO2 value:', co2);
+
   // Define CO2 thresholds
   const co2Thresholds = {
     safe: 450,
@@ -12,6 +14,7 @@ const DashboardCards = ({ temperature, pm25, co2, totalSensors, workingSensors }
 
   // Get CO2 status and color
   const getCo2Status = (value) => {
+    console.log('Getting CO2 status for value:', value);
     if (!value) return { status: 'N/A', color: '#666' };
     if (value <= co2Thresholds.safe) return { status: 'Safe', color: '#4CAF50' };
     if (value <= co2Thresholds.elevated) return { status: 'Elevated', color: '#8BC34A' };
