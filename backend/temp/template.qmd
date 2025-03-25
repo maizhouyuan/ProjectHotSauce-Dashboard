@@ -48,25 +48,78 @@ from datetime import datetime
 from collections import defaultdict
 from data import report_type, selected_sensors, start_time, end_time, date_range
 
+# Sensor ID to Name Mapping
+sensor_name_map = {
+    'bcff4dd3b24c': 'Sensor 2 - Room 110',
+    'fcf5c497654a': 'Sensor 3 - Event Space',
+    'bcff4dd3b442': 'Sensor 4 - Room 220',
+    'd8bfc0c0e514': 'Sensor 5 - Courtyard',
+    'a4cf12ff89ae': 'Sensor 6 - Room 216',
+    '40f52032b5b7': 'Sensor 7 - Staff Space',
+    '08f9e05fd2d3': 'Sensor 8 - Room 210',
+    '485519ee6c1a': 'Sensor 9 - Lounge Space',
+    '485519ee5010': 'Sensor 10 - Study Space',
+    '2462ab14bae1': 'Sensor 11 - Room 307',
+    '98f4abd6f8fa': 'Sensor 12 - Room 402',
+    '18fe34f753d2': 'Sensor 13 - Room 416'
+}
+
 # Setup
 output_dir = "charts"
 os.makedirs(output_dir, exist_ok=True)
 
-# Load data (assumed to be passed in as 'sensor_df.csv')
+# Load data
 df = pd.read_csv("sensor_data.csv")
+
+# Replace Sensor IDs with Names
+df['Sensor Name'] = df['Sensor ID'].map(sensor_name_map).fillna(df['Sensor ID'])
 
 # Parse Timestamp
 df['Timestamp'] = pd.to_datetime(df['Timestamp'])
 df.sort_values(by='Timestamp', inplace=True)
 
-# Separate by sensor
-sensor_groups = df.groupby("Sensor ID")
+# Set Timestamp as index for resampling
+df.set_index('Timestamp', inplace=True)
+
+# Resample to 30-minute intervals
+# We'll use mean for numeric columns
+resampled_data = []
+for sensor_name in df['Sensor Name'].unique():
+    sensor_df = df[df['Sensor Name'] == sensor_name]
+    
+    # Resample and aggregate
+    resampled_sensor = sensor_df.groupby([pd.Grouper(freq='30T'), 'Sensor Name']).agg({
+        'Temperature': 'mean',
+        'Humidity': 'mean',
+        'CO2': 'mean',
+        'PM2.5': 'mean'
+    }).reset_index()
+    
+    resampled_data.append(resampled_sensor)
+
+# Combine resampled data
+df_resampled = pd.concat(resampled_data)
+
+# Custom sorting function for sensor names
+def sensor_sort_key(name):
+    # Extract the sensor number from the name
+    try:
+        return int(name.split()[1])
+    except:
+        return float('inf')
+
+
+# Reset for further processing
+df = df_resampled.reset_index(drop=True)
+
+# Separate by sensor name
+sensor_groups = df.groupby("Sensor Name")
 
 # Function to generate charts for each metric
 def plot_metric(metric, ylabel, filename_prefix, colors):
     plt.figure(figsize=(10, 5))
-    for i, (sensor_id, group) in enumerate(sensor_groups):
-        plt.plot(group['Timestamp'], group[metric], label=f"Sensor {sensor_id}", color=colors[i % len(colors)], marker='o')
+    for i, (sensor_name, group) in enumerate(sensor_groups):
+        plt.plot(group['Timestamp'], group[metric], label=sensor_name, color=colors[i % len(colors)], marker='o')
     plt.xlabel("Timestamp")
     plt.ylabel(ylabel)
     plt.title(f"{metric} over Time")
@@ -75,7 +128,6 @@ def plot_metric(metric, ylabel, filename_prefix, colors):
     filename = f"{output_dir}/{filename_prefix}.png"
     plt.savefig(filename, bbox_inches='tight', dpi=150)
     plt.close()
-
 
 sensor_colors = [
     'red', 'orange', 'blue', 'green', 'purple', 'cyan',
@@ -89,13 +141,16 @@ plot_metric("CO2", "CO2 (ppm)", "co2_chart", sensor_colors)
 plot_metric("PM2.5", "PM2.5 (µg/m³)", "pm_chart", sensor_colors)
 
 # Data Summary
-summary = df.groupby("Sensor ID").agg({
+summary = df.groupby("Sensor Name").agg({
     "Temperature": ["min", "max"],
     "Humidity": ["min", "max"],
     "CO2": ["min", "max"],
     "PM2.5": ["min", "max"]
-})
-print(summary)
+}).round(0).astype(int)
+
+# Sort the summary by sensor number
+sorted_summary = summary.reindex(sorted(summary.index, key=sensor_sort_key))
+print(sorted_summary)
 
 ```
 
