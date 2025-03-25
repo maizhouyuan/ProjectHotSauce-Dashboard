@@ -17,23 +17,20 @@ import annotationPlugin from 'chartjs-plugin-annotation';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, annotationPlugin);
 
 const BarChart = ({ data }) => {
-  const [selectedSensor, setSelectedSensor] = useState('sensor-001'); // Default sensor
   const [chartData, setChartData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Generate sensor options based on the total count
-  const generateSensorOptions = () => {
-    const totalSensors = data?.sensorCounts?.total || 10; // Default to 10 if not provided
-    return Array.from({ length: totalSensors }, (_, i) => {
-      const sensorNumber = (i + 1).toString().padStart(3, '0');
-      return `sensor-${sensorNumber}`;
-    });
-  };
+  // Define all sensors (matching SensorGrid)
+  const allSensors = Array.from({ length: 14 }, (_, i) => ({
+    id: i + 1,
+    name: `Sensor ${i + 1}`,
+    status: i === 13 ? 'error' : 'active' // Sensor 14 is in error state
+  }));
 
   // Process the data when it changes
   useEffect(() => {
-    if (!data || !data.yearlyData || !data.yearlyData.co2) {
+    if (!data || !data.realTimeData || !data.sensorCounts) {
       setError('No data available');
       setIsLoading(false);
       return;
@@ -41,17 +38,33 @@ const BarChart = ({ data }) => {
 
     try {
       setIsLoading(true);
+      
+      // Create data for actual sensors
+      const totalSensors = data.sensorCounts.total || 0;
+      const sensorData = {};
+      
+      // Initialize actual sensors with 0
+      for (let i = 1; i <= totalSensors; i++) {
+        const sensorId = `sensor-${i.toString().padStart(3, '0')}`;
+        sensorData[sensorId] = 0; // Default value
+      }
+
+      // Update with actual value for sensor-001
+      if (data.realTimeData.co2) {
+        sensorData['sensor-001'] = data.realTimeData.co2;
+      }
+
       // Process the data for the chart
       const processedData = {
-        labels: data.yearlyData.co2.map(item => item.month.substring(5)), // Get just the month part (MM)
+        labels: Object.keys(sensorData).map(id => id.split('-')[1]), // Show just the number part
         datasets: [{
-          label: `CO2 Level (ppm) - ${selectedSensor}`,
-          data: data.yearlyData.co2.map(item => item.value),
-          backgroundColor: data.yearlyData.co2.map(item => {
-            if (item.value <= 450) return 'green';
-            if (item.value <= 700) return 'yellowgreen';
-            if (item.value <= 1000) return 'yellow';
-            if (item.value <= 2000) return 'orange';
+          label: 'CO2 Level (ppm)',
+          data: Object.values(sensorData),
+          backgroundColor: Object.values(sensorData).map(value => {
+            if (value <= 450) return 'green';
+            if (value <= 700) return 'yellowgreen';
+            if (value <= 1000) return '#FFD700';
+            if (value <= 2000) return 'orange';
             return 'red';
           }),
         }]
@@ -64,7 +77,7 @@ const BarChart = ({ data }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [data, selectedSensor]);
+  }, [data]);
 
   // Define threshold values based on CO2 levels
   const thresholds = {
@@ -79,7 +92,7 @@ const BarChart = ({ data }) => {
     responsive: true,
     plugins: {
       legend: { position: 'top' },
-      title: { display: true, text: 'Monthly CO2 Levels' },
+      title: { display: true, text: 'CO2 Levels by Sensor' },
       annotation: {
         annotations: {
           safeThreshold: {
@@ -108,7 +121,7 @@ const BarChart = ({ data }) => {
             type: 'line',
             yMin: thresholds.moderate,
             yMax: thresholds.moderate,
-            borderColor: 'yellow',
+            borderColor: '#FFD700',
             borderWidth: 3,
             borderDash: [5, 5],
             label: {
@@ -131,14 +144,14 @@ const BarChart = ({ data }) => {
     },
     scales: {
       y: {
-        title: { display: true, text: 'ppm' },
+        title: { display: true, text: 'CO2 Level (ppm)' },
         beginAtZero: true,
         ticks: {
           callback: value => `${value} ppm`
         }
       },
       x: {
-        title: { display: true, text: 'Month' }
+        title: { display: true, text: 'Sensor ID' }
       }
     },
   };
@@ -150,26 +163,6 @@ const BarChart = ({ data }) => {
   return (
     <div style={{ display: 'flex', gap: '20px' }}>
       <div style={{ flex: 3 }}>
-        <div style={{ marginBottom: '20px', textAlign: 'right' }}>
-          <select 
-            value={selectedSensor} 
-            onChange={(e) => setSelectedSensor(e.target.value)}
-            style={{
-              padding: '8px',
-              fontSize: '14px',
-              borderRadius: '4px',
-              border: '1px solid #ccc',
-              backgroundColor: '#fff',
-              cursor: 'pointer'
-            }}
-          >
-            {generateSensorOptions().map(sensorId => (
-              <option key={sensorId} value={sensorId}>
-                Sensor {sensorId.split('-')[1]}
-              </option>
-            ))}
-          </select>
-        </div>
         <Bar data={chartData} options={options} />
       </div>
       <div style={{ 
@@ -189,7 +182,7 @@ const BarChart = ({ data }) => {
         <div style={{ color: 'yellowgreen', fontWeight: 'bold', fontSize: '12px' }}>
           Elevated: {thresholds.elevated} ppm
         </div>
-        <div style={{ color: 'yellow', fontWeight: 'bold', fontSize: '12px' }}>
+        <div style={{ color: '#FFD700', fontWeight: 'bold', fontSize: '12px' }}>
           Moderate: {thresholds.moderate} ppm
         </div>
         <div style={{ color: 'orange', fontWeight: 'bold', fontSize: '12px' }}>

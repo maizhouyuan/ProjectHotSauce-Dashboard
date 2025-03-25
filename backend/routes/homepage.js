@@ -16,6 +16,8 @@ router.get('/data', async (req, res) => {
             dynamodb.getSensorCounts()
         ]);
 
+        console.log('Real-time data received:', realTimeData);
+
         // Format response
         const response = {
             yearlyData: {
@@ -30,13 +32,16 @@ router.get('/data', async (req, res) => {
             },
             realTimeData: {
                 temperature: realTimeData ? realTimeData.Temperature : null,
-                pm25: realTimeData ? realTimeData['PM2.5'] : null
+                pm25: realTimeData ? realTimeData['PM2.5'] : null,
+                co2: realTimeData ? realTimeData.CO2 : null
             },
             sensorCounts: {
                 total: sensorCounts.totalSensors,
                 working: sensorCounts.workingSensors
             }
         };
+
+        console.log('Formatted response:', response);
 
         res.json(response);
     } catch (error) {

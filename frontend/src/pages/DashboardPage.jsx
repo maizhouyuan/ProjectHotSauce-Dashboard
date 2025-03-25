@@ -66,11 +66,14 @@ const DashboardPage = () => {
           ? formattedCo2Data[formattedCo2Data.length - 1].value 
           : null;
 
+        // Always use the CO2 value from the first working sensor (sensor-001)
         setRealTimeData({
           temperature: homepageData.realTimeData.temperature,
           pm25: homepageData.realTimeData.pm25,
-          co2: homepageData.realTimeData.co2 || mostRecentCo2
+          co2: homepageData.realTimeData.co2  // This is from sensor-001 which is working
         });
+
+        // Use actual sensor counts from the backend
         setSensorCounts(homepageData.sensorCounts);
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
@@ -99,7 +102,10 @@ const DashboardPage = () => {
 
         {/* Bar Chart for CO2 */}
         <div className="chart-wrapper">
-          <BarChart data={co2Data} />
+          <BarChart data={{
+            realTimeData: realTimeData,
+            sensorCounts: sensorCounts
+          }} />
         </div>
       </div>
 
