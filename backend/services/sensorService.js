@@ -1,4 +1,4 @@
-const { getRealTimeData } = require('../utils/dynamodb');
+const { getRealTimeData, getHistoricalData } = require('../utils/dynamodb');
 
 // Fixed sensor configuration
 const SENSOR_CONFIG = [
@@ -173,8 +173,32 @@ const getSensorById = async (id) => {
     }
 };
 
+const getSensorHistory = async (id) => {
+    try {
+        console.log(`Fetching 24-hour history for sensor ${id}...`);
+        const now = new Date();
+        const twentyFourHoursAgo = new Date(now.getTime() - (24 * 60 * 60 * 1000));
+        
+        const data = await getHistoricalData(id, twentyFourHoursAgo.toISOString(), now.toISOString());
+        console.log(`Retrieved ${data.length} records for sensor ${id}`);
+        
+        // Process the data into a format suitable for charts
+        const processedData = data.map(reading => ({
+            timestamp: reading.Timestamp,
+            temperature: reading.Temperature,
+            co2: reading.CO2
+        })).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+        return processedData;
+    } catch (error) {
+        console.error('Error fetching sensor history:', error);
+        throw error;
+    }
+};
+
 module.exports = {
     getAllSensors,
     getSensorsByFloor,
-    getSensorById
+    getSensorById,
+    getSensorHistory
 }; 

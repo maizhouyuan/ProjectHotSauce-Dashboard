@@ -1,26 +1,40 @@
 .sensors-page {
-  display: grid;
-  grid-template-columns: 1fr 300px; /* Layout with a main content area and a 300px sidebar */
-  gap: 2rem; /* Spacing between grid items */
-  padding: 2rem; /* Inner padding around the grid */
-  margin-top: -80px; /* Adjust the vertical position */
-  margin-left: 40px; /* Offset the grid slightly to the right */
+  display: flex;
+  height: calc(100vh - 120px);
+  gap: 20px;
+  padding: 0 20px;
+  margin-top: -40px;
 }
 
 .sensors-container {
-  background: #f5f5f5; /* Background color */
-  border-radius: 10px; /* Rounded corners */
-  padding: 2rem; /* Inner padding */
-  width: auto; /* Automatically adjust width to fit content */
-  height: auto; /* Automatically adjust height to fit content */
-  max-width: 100%; /* Prevent content from overflowing the container */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for a better visual effect */
+  width: calc(100% - 370px);
+  min-width: 0;
+}
+
+.sensor-detail-container {
+  width: 350px;
+  min-width: 350px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  height: 100%;
 }
 
 @media (max-width: 1024px) {
   .sensors-page {
-    grid-template-columns: 1fr; /* Switch to a single-column layout on smaller screens */
-    gap: 1rem; /* Reduce spacing between items */
-    padding: 1rem; /* Reduce padding */
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    margin-top: 0;
+  }
+
+  .sensors-container {
+    width: 100%;
+  }
+
+  .sensor-detail-container {
+    width: 100%;
+    min-width: unset;
   }
 }

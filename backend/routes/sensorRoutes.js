@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
     console.log('Successfully fetched sensors:', sensors);
     res.json(sensors);
   } catch (error) {
-    console.error('Error in GET /api/sensors:', error);
+    console.error('Error in GET /sensors:', error);
     res.status(500).json({ error: 'Failed to fetch sensors' });
   }
 });
@@ -42,8 +42,21 @@ router.get('/:id', async (req, res) => {
     console.log('Successfully fetched sensor:', sensor);
     res.json(sensor);
   } catch (error) {
-    console.error(`Error in GET /api/sensors/${req.params.id}:`, error);
-    res.status(500).json({ error: 'Failed to fetch sensor data' });
+    console.error('Error in GET /sensors/:id:', error);
+    res.status(500).json({ error: 'Failed to fetch sensor' });
+  }
+});
+
+// Get 24-hour historical data for a sensor
+router.get('/:id/history', async (req, res) => {
+  try {
+    console.log(`Fetching history for sensor ${req.params.id}`);
+    const history = await sensorService.getSensorHistory(req.params.id);
+    console.log(`Sending ${history.length} historical records`);
+    res.json(history);
+  } catch (error) {
+    console.error('Error in GET /sensors/:id/history:', error);
+    res.status(500).json({ error: 'Failed to fetch sensor history' });
   }
 });
 

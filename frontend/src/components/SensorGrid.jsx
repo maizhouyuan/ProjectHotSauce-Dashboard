@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/SensorGrid.css';
 
-const SensorGrid = () => {
+const SensorGrid = ({ onSensorClick, temperatureUnit, onTemperatureUnitChange }) => {
   const [sensors, setSensors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [temperatureUnit, setTemperatureUnit] = useState('F');
 
   // Mapping of sensor IDs to display numbers
   const sensorNumberMapping = {
@@ -84,37 +83,10 @@ const SensorGrid = () => {
 
   const floorOrder = ['4', '3', '2', '1', 'external'];
 
-  const renderSensorCard = (sensor) => {
-    const lastReading = sensor.lastReading;
-    const sensorNumber = sensorNumberMapping[sensor.id] || 'N/A';
-    return (
-      <div key={sensor.id} className={`sensor-card ${sensor.status}`}>
-        <h3>Sensor {sensorNumber} - {sensor.name}</h3>
-        <div className="data-point">
-          <span className="label">Temperature:</span>
-          <span className="value">{formatTemperature(lastReading.temperature)}</span>
-        </div>
-        <div className="data-point">
-          <span className="label">Humidity:</span>
-          <span className="value">{lastReading.humidity !== null ? `${lastReading.humidity}%` : 'N/A'}</span>
-        </div>
-        <div className="data-point">
-          <span className="label">CO2:</span>
-          <span className="value">{lastReading.co2 !== null ? `${lastReading.co2} ppm` : 'N/A'}</span>
-        </div>
-        <div className="data-point">
-          <span className="label">PM2.5:</span>
-          <span className="value">{lastReading.pm25 !== null ? `${lastReading.pm25} µg/m³` : 'N/A'}</span>
-        </div>
-        <div className="data-point timestamp">
-          <span className="label">Last Updated:</span>
-          <span className="value">{formatTimestamp(lastReading.timestamp)}</span>
-        </div>
-        <div className={`status-indicator ${sensor.status}`}>
-          {sensor.status}
-        </div>
-      </div>
-    );
+  const handleSensorClick = (sensor) => {
+    if (onSensorClick) {
+      onSensorClick(sensor);
+    }
   };
 
   return (
@@ -123,13 +95,13 @@ const SensorGrid = () => {
         <div className="temperature-unit-toggle">
           <button 
             className={`unit-button ${temperatureUnit === 'F' ? 'active' : ''}`}
-            onClick={() => setTemperatureUnit('F')}
+            onClick={() => onTemperatureUnitChange('F')}
           >
             °F
           </button>
           <button 
             className={`unit-button ${temperatureUnit === 'C' ? 'active' : ''}`}
-            onClick={() => setTemperatureUnit('C')}
+            onClick={() => onTemperatureUnitChange('C')}
           >
             °C
           </button>
@@ -147,7 +119,43 @@ const SensorGrid = () => {
               <div key={floor} className="floor-section">
                 <h2>Floor {floor}</h2>
                 <div className="sensors-container">
-                  {floorSensors.map(renderSensorCard)}
+                  {floorSensors.map(sensor => (
+                    <div
+                      key={sensor.id}
+                      className="sensor-card"
+                      data-status={sensor.status}
+                      onClick={() => handleSensorClick(sensor)}
+                    >
+                      <div className={`status-indicator ${sensor.status}`}>
+                        {sensor.status}
+                      </div>
+                      <h3>Sensor {sensorNumberMapping[sensor.id] || 'N/A'} - {sensor.name}</h3>
+                      {sensor.lastReading && (
+                        <>
+                          <div className="data-point">
+                            <span className="label">Temperature:</span>
+                            <span className="value">{formatTemperature(sensor.lastReading.temperature)}</span>
+                          </div>
+                          <div className="data-point">
+                            <span className="label">Humidity:</span>
+                            <span className="value">{sensor.lastReading.humidity !== null ? `${sensor.lastReading.humidity}%` : 'N/A'}</span>
+                          </div>
+                          <div className="data-point">
+                            <span className="label">CO2:</span>
+                            <span className="value">{sensor.lastReading.co2 !== null ? `${sensor.lastReading.co2} ppm` : 'N/A'}</span>
+                          </div>
+                          <div className="data-point">
+                            <span className="label">PM2.5:</span>
+                            <span className="value">{sensor.lastReading.pm25 !== null ? `${sensor.lastReading.pm25} µg/m³` : 'N/A'}</span>
+                          </div>
+                          <div className="data-point timestamp">
+                            <span className="label">Last Updated:</span>
+                            <span className="value">{formatTimestamp(sensor.lastReading.timestamp)}</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             );

@@ -7,6 +7,7 @@ const homepageRoutes = require('./routes/homepage');
 const weatherRoutes = require('./routes/weatherRoutes');
 const reportRoutes = require('./routes/reports');
 const sensorRoutes = require('./routes/sensorRoutes');
+const noteRoutes = require('./routes/noteRoutes');
 
 app.use(cors({
     origin: 'http://localhost:5173',
@@ -27,6 +28,7 @@ app.use('/api/reports', reportRoutes);
 
 // Add sensor routes
 app.use('/api/sensors', sensorRoutes);
+app.use('/api/sensors', noteRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
