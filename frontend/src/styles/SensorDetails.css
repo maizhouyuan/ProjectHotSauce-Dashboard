@@ -1,35 +1,34 @@
-/* styles/SensorDetails.css */
 .sensor-details {
-    background: #A92424;
-    color: white;
-    border-radius: 10px;
-    padding: 1.5rem;
-  }
-  
-  .details-content {
-    background: white;
-    color: black;
-    border-radius: 8px;
-    padding: 1rem;
-    margin: 1rem 0;
-  }
-  
-  .add-notes {
-    margin-top: 1rem;
-  }
-  
-  .add-notes textarea {
-    width: 100%;
-    border-radius: 8px;
-    padding: 0.5rem;
-    margin: 0.5rem 0;
-  }
-  
-  .save-button {
-    background: #f8f9fa;
-    border: none;
-    border-radius: 5px;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    float: right;
-  }
+  background: #A92424;
+  color: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+}
+
+.details-content {
+  background: white;
+  color: black;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.add-notes {
+  margin-top: 1rem;
+}
+
+.add-notes textarea {
+  width: 100%;
+  border-radius: 8px;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.save-button {
+  background: #f8f9fa;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  float: right;
+}

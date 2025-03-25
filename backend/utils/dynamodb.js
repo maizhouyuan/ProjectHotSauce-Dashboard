@@ -1,8 +1,14 @@
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, QueryCommand, ScanCommand, PutCommand } = require("@aws-sdk/lib-dynamodb");
 const bcrypt = require("bcrypt");
-require("dotenv").config({ path: "../.env" });
-//console.log("AWS REGION:", process.env.AWS_REGION);//debug
+const path = require('path');
+require("dotenv").config({ path: path.resolve(__dirname, '../.env') });
+
+console.log('AWS Credentials Check:', {
+    region: process.env.AWS_REGION,
+    hasAccessKey: !!process.env.AWS_ACCESS_KEY_ID,
+    hasSecretKey: !!process.env.AWS_SECRET_ACCESS_KEY
+});
 
 // AWS SDK v3: Initialize DynamoDB Client
 const client = new DynamoDBClient({
@@ -76,11 +82,13 @@ module.exports = {
       };
 
       try {
+          console.log(`Attempting to query DynamoDB for sensor ${sensorId} with params:`, JSON.stringify(params, null, 2));
           const command = new QueryCommand(params);
           const data = await dynamoDB.send(command);
+          console.log(`DynamoDB response for sensor ${sensorId}:`, JSON.stringify(data, null, 2));
           return data.Items[0] || null;
       } catch (error) {
-          console.error("Error getting real-time data:", error);
+          console.error(`DynamoDB error for sensor ${sensorId}:`, error);
           throw error;
       }
   },

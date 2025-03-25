@@ -14,7 +14,6 @@ const SensorsPage = () => {
   return (
     <div className="sensors-page">
       <div className="sensors-container">
-        <h1>Sensors by Floors</h1>
         <SensorGrid onSensorClick={handleSensorClick} />
       </div>
       <SensorDetails sensor={selectedSensor} />
