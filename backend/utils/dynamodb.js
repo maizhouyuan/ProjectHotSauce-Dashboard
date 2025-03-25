@@ -1,6 +1,8 @@
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const { DynamoDBDocumentClient, QueryCommand, ScanCommand } = require("@aws-sdk/lib-dynamodb");
-require("dotenv").config();
+
+const { DynamoDBDocumentClient, QueryCommand, ScanCommand, PutCommand } = require("@aws-sdk/lib-dynamodb");
+const bcrypt = require("bcrypt");
+require("dotenv").config({ path: "../.env" });
 
 // AWS SDK v3: Initialize DynamoDB Client
 const client = new DynamoDBClient({
@@ -13,6 +15,7 @@ const client = new DynamoDBClient({
 
 // Use DocumentClient for simpler JSON responses
 const dynamoDB = DynamoDBDocumentClient.from(client);
+const USERS_TABLE = process.env.DYNAMODB_USERS_TABLE || "UsersTable";
 
 module.exports = {
   // Get yearly average temperature and CO2 data for a specific sensor
@@ -182,4 +185,54 @@ module.exports = {
     
     return mergedData;
   },
+
+  //register user
+  async registerUser(username, password, role = "user") {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const params = {
+        TableName: USERS_TABLE,
+        Item: {
+            username,
+            password: hashedPassword,
+            role,
+        },
+    };
+
+    try {
+        await dynamoDB.send(new PutCommand(params));
+        return { success: true, message: "User registered successfully" };
+    } catch (error) {
+        console.error("Error registering user:", error);
+        throw error;
+    }
+},
+
+// user authentication
+async authenticateUser(username, password) {
+    const params = {
+        TableName: USERS_TABLE,
+        KeyConditionExpression: "#username = :username",
+        ExpressionAttributeNames: { "#username": "username" },
+        ExpressionAttributeValues: { ":username": username },
+    };
+
+    try {
+        const command = new QueryCommand(params);
+        const data = await dynamoDB.send(command);
+
+        if (data.Items.length === 0) {
+            return null;
+        }
+
+        const user = data.Items[0];
+        const isValid = await bcrypt.compare(password, user.password);
+        if (!isValid) return null;
+
+        return user;
+    } catch (error) {
+        console.error("Error authenticating user:", error);
+        throw error;
+    }
+},
 };
