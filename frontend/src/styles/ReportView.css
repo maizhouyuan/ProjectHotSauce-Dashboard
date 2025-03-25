@@ -1,78 +1,145 @@
-/* styles/ReportView.css */
 .report-view {
-    background-color: #b22222;
-    padding: 2rem;
-    border-radius: 15px;
-    color: white;
-    max-width: 900px;
-    margin: 2rem auto;
+  background-color: #f5f5f5;
+  padding: 2rem;
+  border-radius: 15px;
+  color: #333;
+  font-family: Arial, sans-serif;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #b22222;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
+.report-view h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  color: #b22222;
+}
+
+.summary-section {
+  background: #ffffff;
+  color: #333;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.summary-section h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.sensor-selectors {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.sensor-selectors select {
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+.sensor-comparison-wrapper {
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+}
+
+.sensor-table-wrapper {
+  flex: 1 1 48%;
+  background: none;
+  color: inherit;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 0.95rem;
+  cursor: default;
+  text-align: left;
+  margin-bottom: 2rem;
+  width: 50%;
+  min-width: 0;
+}
+
+.sensor-table-wrapper h3 {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.sensor-table {
+  width: 100%;
+  table-layout: fixed; 
+  word-wrap: break-word;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+
+.sensor-table thead {
+  background-color: #b22222;
+  color: white;
+}
+
+.sensor-table th,
+.sensor-table td {
+  padding: 0.75rem 1rem;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.sensor-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.sensor-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.download-button {
+  background: #b22222;
+  color: white;
+  padding: 0.8rem 2rem;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  display: block;
+  margin: 2rem auto 0;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.download-button:hover {
+  background: #a11d1d;
+}
+
+@media (max-width: 768px) {
+  .sensor-comparison-wrapper {
+    flex-direction: column;
   }
-  
-  .report-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 2rem;
+
+  .report-view {
+    padding: 1rem;
   }
-  
-  .back-button {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+
+  .sensor-table-wrapper {
+    flex: 1 1 100%;
   }
-  
-  .back-button:before {
-    content: "←";
-  }
-  
-  .sensor-data {
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-  }
-  
-  .sensor-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 10px;
-  }
-  
-  .sensor-card h3 {
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
-  }
-  
-  .data-list {
-    font-size: 0.9rem;
-    line-height: 1.6;
-  }
-  
-  .date-range {
-    background: white;
-    color: black;
-    padding: 0.5rem 2rem;
-    border-radius: 20px;
-    display: inline-block;
-    margin: 1rem auto;
-  }
-  
-  .download-button {
-    background-color: rgba(255, 255, 255, 0.9);
-    color: #b22222;
-    padding: 0.8rem 2rem;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 1rem;
-    display: block;
-    margin: 2rem auto 0;
-    font-weight: bold;
-  }
+}

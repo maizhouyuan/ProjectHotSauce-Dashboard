@@ -1,7 +1,6 @@
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const { DynamoDBDocumentClient, QueryCommand, ScanCommand } = require("@aws-sdk/lib-dynamodb");
 require("dotenv").config();
-console.log("AWS REGION:", process.env.AWS_REGION);
 
 // AWS SDK v3: Initialize DynamoDB Client
 const client = new DynamoDBClient({
@@ -148,33 +147,39 @@ module.exports = {
   
   // Compare multiple sensors for a given report type and time range
   async compareMultipleSensors(sensorIds, reportType, startTime, endTime) {
-      const sensorData = {};
+    const mergedData = [];
 
-      for (const sensorId of sensorIds) {
-          const params = {
-              TableName: "AllDataTest",
-              KeyConditionExpression: "#sid = :sensorId AND #ts BETWEEN :startTime AND :endTime",
-              ExpressionAttributeNames: {
-                  "#sid": "Sensor ID",
-                  "#ts": "Timestamp",
-              },
-              ExpressionAttributeValues: {
-                  ":sensorId": sensorId,
-                  ":startTime": startTime,
-                  ":endTime": endTime,
-              },
-          };
-
-          try {
-              const command = new QueryCommand(params);
-              const data = await dynamoDB.send(command);
-              sensorData[sensorId] = data.Items;
-          } catch (error) {
-              console.error(`Error fetching data for sensor ${sensorId}:`, error);
-              sensorData[sensorId] = [];
-          }
-      }
-
-      return sensorData;
+    for (const sensorId of sensorIds) {
+        const params = {
+            TableName: "AllDataTest",
+            KeyConditionExpression: "#sid = :sensorId AND #ts BETWEEN :startTime AND :endTime",
+            ExpressionAttributeNames: {
+                "#sid": "Sensor ID",
+                "#ts": "Timestamp",
+            },
+            ExpressionAttributeValues: {
+                ":sensorId": sensorId,
+                ":startTime": startTime,
+                ":endTime": endTime,
+            },
+        };
+    
+        try {
+            const command = new QueryCommand(params);
+            const data = await dynamoDB.send(command);
+            
+            // Tag each item with its sensor ID
+            const taggedItems = data.Items.map(item => ({
+                ...item,
+                "Sensor ID": sensorId,
+            }));
+    
+            mergedData.push(...taggedItems);
+        } catch (error) {
+            console.error(`Error fetching data for sensor ${sensorId}:`, error);
+        }
+    }
+    
+    return mergedData;
   },
 };

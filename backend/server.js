@@ -6,6 +6,7 @@ const homepageRoutes = require('./routes/homepage');
 // Import the new weather routes
 const weatherRoutes = require('./routes/weatherRoutes');
 const reportRoutes = require('./routes/reports');
+const downloadRoutes = require("./routes/download");
 
 app.use(cors({
     origin: 'http://localhost:5173',
@@ -23,6 +24,8 @@ app.use('/api/homepage', homepageRoutes);
 app.use('/api/weather', weatherRoutes);
 
 app.use('/api/reports', reportRoutes);
+
+app.use("/api/download", downloadRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

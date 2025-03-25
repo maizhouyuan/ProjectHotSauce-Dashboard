@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^6.4.8",
+    "@mui/x-date-pickers": "^7.28.0",
     "chart.js": "^4.4.7",
     "date-fns": "^2.30.0",
     "react": "^18.3.1",
@@ -19,7 +23,8 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.0.1",
     "react-select": "^5.10.1",
-    "react-time-picker": "^7.0.0"
+    "react-time-picker": "^7.0.0",
+    "react-timekeeper": "^2.2.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",
