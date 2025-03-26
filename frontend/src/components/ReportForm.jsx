@@ -1,9 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { DateRangePicker } from 'react-date-range';
 import { addDays, format, isAfter, isBefore, subYears } from 'date-fns';
+import { components } from 'react-select';
 import Select from 'react-select';
 import TimeKeeper from 'react-timekeeper';
 import '../styles/ReportForm.css';
+
+const CustomOption = (props) => {
+  const { data, isSelected } = props;
+  return (
+    <components.Option {...props}>
+      <input
+        type="checkbox"
+        checked={isSelected}
+        onChange={() => null}
+        style={{ marginRight: 10 }}
+      />
+      <label>{data.label}</label>
+    </components.Option>
+  );
+};
 
 const ReportForm = ({ onReportGenerate }) => {
   const [reportType, setReportType] = useState('');
@@ -224,6 +240,9 @@ const ReportForm = ({ onReportGenerate }) => {
           className="select-container"
           classNamePrefix="select"
           isDisabled={!reportType}
+          closeMenuOnSelect={false}
+          hideSelectedOptions={false}
+          components={reportType === 'comparison' ? { Option: CustomOption } : {}}
         />
       )}
       {errors.sensors && <div className="error-message">{errors.sensors}</div>}
