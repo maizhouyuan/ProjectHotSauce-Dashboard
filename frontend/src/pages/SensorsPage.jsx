@@ -1,23 +1,42 @@
-// pages/SensorsPage.jsx
 import React, { useState } from 'react';
 import SensorGrid from '../components/SensorGrid';
-import SensorDetails from '../components/SensorDetails';
+import SensorDetail from '../components/SensorDetail';
 import '../styles/SensorsPage.css';
 
 const SensorsPage = () => {
   const [selectedSensor, setSelectedSensor] = useState(null);
+  const [temperatureUnit, setTemperatureUnit] = useState('F');
 
   const handleSensorClick = (sensor) => {
     setSelectedSensor(sensor);
   };
 
+  const handleCloseDetail = () => {
+    setSelectedSensor(null);
+  };
+
+  const handleTemperatureUnitChange = (unit) => {
+    setTemperatureUnit(unit);
+  };
+
   return (
     <div className="sensors-page">
-      <div className="sensors-container">
-        <h1>Sensors by Floors</h1>
-        <SensorGrid onSensorClick={handleSensorClick} />
+      <div className={`sensors-container ${selectedSensor ? 'with-detail' : ''}`}>
+        <SensorGrid 
+          onSensorClick={handleSensorClick}
+          temperatureUnit={temperatureUnit}
+          onTemperatureUnitChange={handleTemperatureUnitChange}
+        />
       </div>
-      <SensorDetails sensor={selectedSensor} />
+      {selectedSensor && (
+        <div className="sensor-detail-container">
+          <SensorDetail
+            sensor={selectedSensor}
+            onClose={handleCloseDetail}
+            temperatureUnit={temperatureUnit}
+          />
+        </div>
+      )}
     </div>
   );
 };

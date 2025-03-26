@@ -1,58 +1,204 @@
 .sensor-grid {
+    padding: 0;
+    background-color: #f5f5f5;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem; /* Reduce vertical gap between floors */
+}
+
+.header-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 15px 15px 20px 15px;
+}
+
+.main-title {
+    font-size: 24px;
+    color: #333;
+    margin: 0;
+}
+
+.temperature-unit-toggle {
+    display: flex;
+    gap: 5px;
+}
+
+.unit-button {
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.unit-button.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.floors-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 0 10px 15px 10px;
+    flex: 1;
+    overflow-y: auto;
+    width: calc(100% + 20px);
+    margin: 0 -10px;
 }
 
 .floor-section {
-    display: flex;
-    gap: 0.5rem; /* Reduce gap between floor number and sensors */
-    align-items: center;
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    width: 100%;
 }
 
-.floor-number {
-    font-size: 1.2rem; /* Decrease font size for floor numbers */
-    font-weight: bold;
-    width: 30px; /* Reduce width for floor numbers */
+.floor-section h2 {
+    margin: 0 0 15px 0;
+    font-size: 16px;
+    color: #333;
 }
 
-.sensors-row {
+.sensors-container {
     display: flex;
-    gap: 0.5rem; /* Reduce horizontal gap between sensor cards */
-    flex-wrap: wrap;
+    gap: 15px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    width: 100%;
+}
+
+.sensors-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.sensors-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.sensors-container::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
 }
 
 .sensor-card {
-    background: #d3d3d3;
-    border-radius: 10px;
-    padding: 0.8rem; /* Reduce padding inside each card */
-    width: 100px; /* Decrease card width */
-    height: 80px; /* Decrease card height */
+    flex: 0 0 230px;
+    background: white;
+    border-radius: 6px;
+    padding: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    min-height: 180px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    cursor: pointer;
-    position: relative;
+    border-left-width: 4px;
+    border-left-style: solid;
+    border-left-color: #ccc;
 }
 
-.sensor-card.error {
-    background: #fff;
-    border: 2px solid #A92424; /* Keep error styling consistent */
+.sensor-card[data-status="active"] {
+    border-left-color: #4CAF50;
+}
+
+.sensor-card[data-status="inactive"] {
+    border-left-color: #f44336;
+}
+
+.sensor-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sensor-card h3 {
+    margin: 0 0 15px 0;
+    font-size: 14px;
+    padding-right: 60px;
+    color: #333;
+    line-height: 1.4;
+}
+
+.data-points {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.data-point {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+}
+
+.data-point .label {
+    color: #666;
+}
+
+.data-point .value {
+    font-weight: 500;
+    color: #333;
+}
+
+.data-point.timestamp {
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px solid #eee;
+    font-size: 12px;
+    color: #888;
 }
 
 .status-indicator {
-    width: 8px; /* Reduce size of status indicator */
-    height: 8px; /* Reduce size of status indicator */
-    border-radius: 50%;
     position: absolute;
-    bottom: 8px; /* Adjust positioning to fit smaller cards */
-    right: 8px;
+    top: 12px;
+    right: 12px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    text-transform: capitalize;
 }
 
 .status-indicator.active {
-    background: #4CAF50; /* Keep active status color */
+    background: #e3f7e9;
+    color: #0a8528;
 }
 
-.status-indicator.error {
-    background: #A92424; /* Keep error status color */
+.status-indicator.inactive {
+    background: #fee7e7;
+    color: #d92e2e;
+}
+
+.loading, .error {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.scroll-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.scroll-button {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+}
+
+.scroll-button:hover {
+    background: #f5f5f5;
 }
