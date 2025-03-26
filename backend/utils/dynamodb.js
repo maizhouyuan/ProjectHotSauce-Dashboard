@@ -2,154 +2,192 @@ const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 
 const { DynamoDBDocumentClient, QueryCommand, ScanCommand, PutCommand } = require("@aws-sdk/lib-dynamodb");
 const bcrypt = require("bcrypt");
-require("dotenv").config({ path: "../.env" });
+const path = require('path');
+require("dotenv").config({ path: path.resolve(__dirname, '../.env') });
+
+console.log('AWS Credentials Check:', {
+    region: process.env.AWS_REGION,
+    hasAccessKey: !!process.env.AWS_ACCESS_KEY_ID,
+    hasSecretKey: !!process.env.AWS_SECRET_ACCESS_KEY
+});
 
 // AWS SDK v3: Initialize DynamoDB Client
 const client = new DynamoDBClient({
-    region: process.env.AWS_REGION,
+    region: process.env.AWS_REGION || 'us-east-1',
     credentials: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    },
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    }
 });
 
 // Use DocumentClient for simpler JSON responses
 const dynamoDB = DynamoDBDocumentClient.from(client);
 const USERS_TABLE = process.env.DYNAMODB_USERS_TABLE || "UsersTable";
 
-module.exports = {
-  // Get yearly average temperature and CO2 data for a specific sensor
-  async getYearlyAverages(sensorId, year) {
-      const params = {
-          TableName: "AllDataTest",
-          KeyConditionExpression: "#sid = :sensorId AND begins_with(#ts, :year)",
-          ExpressionAttributeNames: {
-              "#sid": "Sensor ID",
-              "#ts": "Timestamp",
-          },
-          ExpressionAttributeValues: {
-              ":sensorId": sensorId,
-              ":year": year,
-          },
-      };
+// Get real-time sensor data
+async function getRealTimeData(sensorId) {
+    const params = {
+        TableName: "AllDataTest",
+        KeyConditionExpression: "#sid = :sensorId",
+        ExpressionAttributeNames: {
+            "#sid": "Sensor ID",
+        },
+        ExpressionAttributeValues: {
+            ":sensorId": sensorId,
+        },
+        Limit: 1,
+        ScanIndexForward: false, // Get the latest record
+    };
 
-      try {
-          const command = new QueryCommand(params);
-          const data = await dynamoDB.send(command);
+    try {
+        console.log(`Attempting to query DynamoDB for sensor ${sensorId} with params:`, JSON.stringify(params, null, 2));
+        const command = new QueryCommand(params);
+        const data = await dynamoDB.send(command);
+        console.log(`DynamoDB response for sensor ${sensorId}:`, JSON.stringify(data, null, 2));
+        return data.Items[0] || null;
+    } catch (error) {
+        console.error(`DynamoDB error for sensor ${sensorId}:`, error);
+        throw error;
+    }
+}
 
-          // Process monthly averages
-          const monthlyData = {};
-          data.Items.forEach((item) => {
-              const month = item.Timestamp.substring(0, 7); // Get YYYY-MM
-              if (!monthlyData[month]) {
-                  monthlyData[month] = { tempSum: 0, co2Sum: 0, count: 0 };
-              }
-              monthlyData[month].tempSum += parseFloat(item.Temperature);
-              monthlyData[month].co2Sum += parseFloat(item.CO2);
-              monthlyData[month].count += 1;
-          });
+// Get historical data for a sensor
+async function getHistoricalData(sensorId, startTime, endTime) {
+    try {
+        console.log(`Attempting to query historical data for sensor ${sensorId}`);
+        const params = {
+            TableName: "AllDataTest",
+            KeyConditionExpression: "#sid = :sensorId AND #ts BETWEEN :start AND :end",
+            ExpressionAttributeNames: {
+                "#sid": "Sensor ID",
+                "#ts": "Timestamp"
+            },
+            ExpressionAttributeValues: {
+                ":sensorId": sensorId,
+                ":start": startTime,
+                ":end": endTime
+            }
+        };
 
-          return Object.entries(monthlyData).map(([month, data]) => ({
-              month,
-              avgTemperature: data.tempSum / data.count,
-              avgCO2: data.co2Sum / data.count,
-          }));
-      } catch (error) {
-          console.error("Error getting yearly averages:", error);
-          throw error;
-      }
-  },
+        console.log('Query params:', JSON.stringify(params, null, 2));
+        const command = new QueryCommand(params);
+        const response = await dynamoDB.send(command);
+        console.log(`Retrieved ${response.Items.length} historical records`);
+        
+        return response.Items;
+    } catch (error) {
+        console.error(`DynamoDB error for historical data of sensor ${sensorId}:`, error);
+        throw error;
+    }
+}
 
-  // Get real-time sensor data
-  async getRealTimeData(sensorId) {
-      const params = {
-          TableName: "AllDataTest",
-          KeyConditionExpression: "#sid = :sensorId",
-          ExpressionAttributeNames: {
-              "#sid": "Sensor ID",
-          },
-          ExpressionAttributeValues: {
-              ":sensorId": sensorId,
-          },
-          Limit: 1,
-          ScanIndexForward: false, // Get the latest record
-      };
+// Get yearly average temperature and CO2 data for a specific sensor
+async function getYearlyAverages(sensorId, year) {
+    const params = {
+        TableName: "AllDataTest",
+        KeyConditionExpression: "#sid = :sensorId AND begins_with(#ts, :year)",
+        ExpressionAttributeNames: {
+            "#sid": "Sensor ID",
+            "#ts": "Timestamp",
+        },
+        ExpressionAttributeValues: {
+            ":sensorId": sensorId,
+            ":year": year,
+        },
+    };
 
-      try {
-          const command = new QueryCommand(params);
-          const data = await dynamoDB.send(command);
-          return data.Items[0] || null;
-      } catch (error) {
-          console.error("Error getting real-time data:", error);
-          throw error;
-      }
-  },
+    try {
+        const command = new QueryCommand(params);
+        const data = await dynamoDB.send(command);
 
-  // Get sensor counts
-  async getSensorCounts() {
-      const params = {
-          TableName: "AllDataTest",
-          ProjectionExpression: "#sid, #ts",
-          ExpressionAttributeNames: {
-              "#sid": "Sensor ID",
-              "#ts": "Timestamp",
-          },
-      };
+        // Process monthly averages
+        const monthlyData = {};
+        data.Items.forEach((item) => {
+            const month = item.Timestamp.substring(0, 7); // Get YYYY-MM
+            if (!monthlyData[month]) {
+                monthlyData[month] = { tempSum: 0, co2Sum: 0, count: 0 };
+            }
+            monthlyData[month].tempSum += parseFloat(item.Temperature);
+            monthlyData[month].co2Sum += parseFloat(item.CO2);
+            monthlyData[month].count += 1;
+        });
 
-      try {
-          const command = new ScanCommand(params);
-          const data = await dynamoDB.send(command);
+        return Object.entries(monthlyData).map(([month, data]) => ({
+            month,
+            avgTemperature: data.tempSum / data.count,
+            avgCO2: data.co2Sum / data.count,
+        }));
+    } catch (error) {
+        console.error("Error getting yearly averages:", error);
+        throw error;
+    }
+}
 
-          const uniqueSensors = new Set();
-          const workingSensors = new Set();
-          const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+// Get sensor counts
+async function getSensorCounts() {
+    const params = {
+        TableName: "AllDataTest",
+        ProjectionExpression: "#sid, #ts",
+        ExpressionAttributeNames: {
+            "#sid": "Sensor ID",
+            "#ts": "Timestamp",
+        },
+    };
 
-          data.Items.forEach((item) => {
-              uniqueSensors.add(item["Sensor ID"]);
-              const timestamp = new Date(item.Timestamp);
-              if (timestamp > tenMinutesAgo) {
-                  workingSensors.add(item["Sensor ID"]);
-              }
-          });
+    try {
+        const command = new ScanCommand(params);
+        const data = await dynamoDB.send(command);
 
-          return {
-              totalSensors: uniqueSensors.size,
-              workingSensors: workingSensors.size,
-          };
-      } catch (error) {
-          console.error("Error getting sensor counts:", error);
-          throw error;
-      }
-  },
+        const uniqueSensors = new Set();
+        const workingSensors = new Set();
+        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
 
-  // Generate report for a specific sensor within a time range
-  async generateReport(sensorId, reportType, startTime, endTime) {
-      const params = {
-          TableName: "AllDataTest",
-          KeyConditionExpression: "#sid = :sensorId AND #ts BETWEEN :startTime AND :endTime",
-          ExpressionAttributeNames: {
-              "#sid": "Sensor ID",
-              "#ts": "Timestamp",
-          },
-          ExpressionAttributeValues: {
-              ":sensorId": sensorId,
-              ":startTime": startTime,
-              ":endTime": endTime,
-          },
-      };
+        data.Items.forEach((item) => {
+            uniqueSensors.add(item["Sensor ID"]);
+            const timestamp = new Date(item.Timestamp);
+            if (timestamp > tenMinutesAgo) {
+                workingSensors.add(item["Sensor ID"]);
+            }
+        });
 
-      try {
-          const command = new QueryCommand(params);
-          const data = await dynamoDB.send(command);
-          return data.Items;
-      } catch (error) {
-          console.error("Error generating report:", error);
-          throw error;
-      }
-  },
-  
-  // Compare multiple sensors for a given report type and time range
-  async compareMultipleSensors(sensorIds, reportType, startTime, endTime) {
+        return {
+            totalSensors: uniqueSensors.size,
+            workingSensors: workingSensors.size,
+        };
+    } catch (error) {
+        console.error("Error getting sensor counts:", error);
+        throw error;
+    }
+}
+
+// Generate report for a specific sensor within a time range
+async function generateReport(sensorId, reportType, startTime, endTime) {
+    const params = {
+        TableName: "AllDataTest",
+        KeyConditionExpression: "#sid = :sensorId AND #ts BETWEEN :startTime AND :endTime",
+        ExpressionAttributeNames: {
+            "#sid": "Sensor ID",
+            "#ts": "Timestamp",
+        },
+        ExpressionAttributeValues: {
+            ":sensorId": sensorId,
+            ":startTime": startTime,
+            ":endTime": endTime,
+        },
+    };
+
+    try {
+        const command = new QueryCommand(params);
+        const data = await dynamoDB.send(command);
+        return data.Items;
+    } catch (error) {
+        console.error("Error generating report:", error);
+        throw error;
+    }
+}
+
+// Compare multiple sensors for a given report type and time range
+async function compareMultipleSensors(sensorIds, reportType, startTime, endTime) {
     const mergedData = [];
 
     for (const sensorId of sensorIds) {
@@ -184,10 +222,10 @@ module.exports = {
     }
     
     return mergedData;
-  },
+}
 
-  //register user
-  async registerUser(username, password, role = "user") {
+//register user
+async function registerUser(username, password, role = "user") {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const params = {
@@ -206,10 +244,10 @@ module.exports = {
         console.error("Error registering user:", error);
         throw error;
     }
-},
+}
 
 // user authentication
-async authenticateUser(username, password) {
+async function authenticateUser(username, password) {
     const params = {
         TableName: USERS_TABLE,
         KeyConditionExpression: "#username = :username",
@@ -234,5 +272,15 @@ async authenticateUser(username, password) {
         console.error("Error authenticating user:", error);
         throw error;
     }
-},
+}
+
+module.exports = {
+    getRealTimeData,
+    getHistoricalData,
+    getYearlyAverages,
+    getSensorCounts,
+    generateReport,
+    compareMultipleSensors,
+    registerUser,
+    authenticateUser
 };
