@@ -36,6 +36,7 @@ app.use("/api/auth", authRoutes);
 app.get("/", (req, res) => {
     res.send("Backend server is running!");
 });
+
 // Add sensor routes
 app.use('/api/sensors', sensorRoutes);
 app.use('/api/sensors', noteRoutes);

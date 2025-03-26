@@ -204,7 +204,6 @@ async function compareMultipleSensors(sensorIds, reportType, startTime, endTime)
                 ":endTime": endTime,
             },
         };
-    
         try {
             const command = new QueryCommand(params);
             const data = await dynamoDB.send(command);
