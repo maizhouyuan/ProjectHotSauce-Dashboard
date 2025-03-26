@@ -6,6 +6,8 @@ const homepageRoutes = require('./routes/homepage');
 // Import the new weather routes
 const weatherRoutes = require('./routes/weatherRoutes');
 const reportRoutes = require('./routes/reports');
+const downloadRoutes = require("./routes/download");
+const authRoutes = require("./routes/auth");
 const sensorRoutes = require('./routes/sensorRoutes');
 const noteRoutes = require('./routes/noteRoutes');
 
@@ -25,6 +27,15 @@ app.use('/api/homepage', homepageRoutes);
 app.use('/api/weather', weatherRoutes);
 
 app.use('/api/reports', reportRoutes);
+
+app.use("/api/download", downloadRoutes);
+app.use("/api/auth", authRoutes);
+
+//default response
+//http://localhost:3000/
+app.get("/", (req, res) => {
+    res.send("Backend server is running!");
+});
 
 // Add sensor routes
 app.use('/api/sensors', sensorRoutes);

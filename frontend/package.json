@@ -20,7 +20,8 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.0.1",
     "react-select": "^5.10.1",
-    "react-time-picker": "^7.0.0"
+    "react-time-picker": "^7.0.0",
+    "react-timekeeper": "^2.2.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",

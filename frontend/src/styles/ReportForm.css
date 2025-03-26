@@ -1,74 +1,137 @@
-/* styles/ReportForm.css */
-.report-container {
-    padding: 2rem;
-  }
-  
-  .report-form {
-    background-color: #b22222;
-    padding: 3rem;
-    border-radius: 15px;
-    color: white;
-  }
-  
-  .form-section {
-    margin-bottom: 2rem;
-  }
-  
-  .form-section h2 {
-    color: white;
-    margin-bottom: 1rem;
-    font-size: 1.2rem;
-    font-weight: normal;
-  }
-  
-  .form-section select {
-    width: 100%;
-    padding: 0.8rem;
-    border-radius: 25px;
-    border: none;
-    background-color: rgba(255, 255, 255, 0.9);
-    font-size: 1rem;
-  }
-  
-  .date-inputs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-  }
-  
-  .date-field {
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    padding: 1rem;
-  }
-  
-  .date-field label {
-    display: block;
-    color: #666;
-    margin-bottom: 0.5rem;
-  }
-  
-  .date-field input {
-    width: 100%;
-    border: none;
-    background: transparent;
-    font-size: 1rem;
-    color: #333;
-  }
-  
-  .submit-button {
-    background-color: #28a745;
-    color: white;
-    padding: 0.8rem 2rem;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 1rem;
-    display: block;
-    margin: 2rem auto 0;
-    min-width: 120px;
-  }
-  
-  .submit-button:hover {
-    background-color: #218838;
-  }
+.report-form {
+  background-color: #b22222;
+  padding: 2rem;
+  border-radius: 15px;
+  color: white;
+}
+
+.report-form h2 {
+  margin: 1.5rem 0 1rem;
+  font-size: 1.2rem;
+}
+
+.select-container {
+  margin-bottom: 1.5rem;
+  color: #333 !important;
+}
+
+.select__control {
+  border-radius: 25px !important;
+  border: none !important;
+  padding: 0.3rem !important;
+}
+
+.select__menu {
+  border-radius: 15px !important;
+  overflow: hidden;
+}
+
+.select__option--is-selected {
+  background-color: rgba(178, 34, 34, 0.8) !important;
+}
+
+.select__option--is-focused {
+  background-color: rgba(178, 34, 34, 0.4) !important;
+}
+
+.select__multi-value {
+  background-color: rgba(178, 34, 34, 0.2) !important;
+  border-radius: 15px !important;
+}
+
+.select__multi-value__label {
+  color: #333 !important;
+}
+
+/* Date Picker */
+.date-selector {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.date-display {
+  background: white;
+  padding: 1rem;
+  border-radius: 25px;
+  color: #333;
+  cursor: pointer;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.date-picker-container {
+  position: absolute;
+  z-index: 10;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.close-datepicker {
+  width: 100%;
+  padding: 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+/* Time Picker */
+.time-selector {
+  position: relative;
+  margin-bottom: 2rem;
+  max-width: 300px;
+}
+
+.time-selector h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.time-picker {
+  margin-bottom: 1.5rem;
+}
+
+.time-picker label {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: white;
+}
+
+.time-display {
+  padding: 0.5rem 2rem;
+  background-color: white;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: fit-content;
+  cursor: pointer;
+  color: black;
+  font-size: 1.2rem;
+}
+
+
+.error-message {
+  color: #ffd700;
+  margin-top: -1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.submit-button {
+  background-color: #28a745;
+  color: white;
+  padding: 0.8rem 2rem;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

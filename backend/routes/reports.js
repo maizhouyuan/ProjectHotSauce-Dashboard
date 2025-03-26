@@ -23,7 +23,7 @@ router.post('/generate', async (req, res) => {
                     type: 'comparison',
                     reportType,
                     timeRange: { startTime, endTime },
-                    comparisonData
+                    reportData: comparisonData
                 }
             });
         } else {

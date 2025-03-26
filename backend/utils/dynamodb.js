@@ -1,4 +1,5 @@
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+
 const { DynamoDBDocumentClient, QueryCommand, ScanCommand, PutCommand } = require("@aws-sdk/lib-dynamodb");
 const bcrypt = require("bcrypt");
 const path = require('path');
@@ -187,7 +188,7 @@ async function generateReport(sensorId, reportType, startTime, endTime) {
 
 // Compare multiple sensors for a given report type and time range
 async function compareMultipleSensors(sensorIds, reportType, startTime, endTime) {
-    const sensorData = {};
+    const mergedData = [];
 
     for (const sensorId of sensorIds) {
         const params = {
@@ -203,18 +204,23 @@ async function compareMultipleSensors(sensorIds, reportType, startTime, endTime)
                 ":endTime": endTime,
             },
         };
-
         try {
             const command = new QueryCommand(params);
             const data = await dynamoDB.send(command);
-            sensorData[sensorId] = data.Items;
+            
+            // Tag each item with its sensor ID
+            const taggedItems = data.Items.map(item => ({
+                ...item,
+                "Sensor ID": sensorId,
+            }));
+    
+            mergedData.push(...taggedItems);
         } catch (error) {
             console.error(`Error fetching data for sensor ${sensorId}:`, error);
-            sensorData[sensorId] = [];
         }
     }
-
-    return sensorData;
+    
+    return mergedData;
 }
 
 //register user
