@@ -6,14 +6,18 @@ import '../styles/DashboardPage.css';
 
 const DashboardPage = () => {
   const [temperatureData, setTemperatureData] = useState([]);
-  const [co2Data, setCo2Data] = useState([]);
+  const [co2Data, setCo2Data] = useState({});
   const [realTimeData, setRealTimeData] = useState({});
   const [sensorCounts, setSensorCounts] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        setError(null);
+        setIsLoading(true);
+
         // Calculate dynamic date range for current month and past 12 months
         const now = new Date();
         const endDate = now.toISOString().split('T')[0];
@@ -38,29 +42,55 @@ const DashboardPage = () => {
         const homepageResponse = await fetch('/api/homepage/data');
         if (!homepageResponse.ok) throw new Error(`HTTP error! status: ${homepageResponse.status}`);
         const homepageData = await homepageResponse.json();
+        console.log('Received homepage data:', homepageData);
 
-        // Format CO2 data for BarChart
-        const formattedCo2Data = homepageData.yearlyData.co2.map(item => ({
-          month: item.month,
-          value: item.value,
-        }));
+        // Validate CO2 data
+        const formattedCo2Data = homepageData.yearlyData.co2
+          .filter(item => item && typeof item.value === 'number' && !isNaN(item.value))
+          .map(item => ({
+            month: item.month,
+            value: item.value,
+          }));
 
         // Set state with API data
         setTemperatureData(formattedTemperatureData);
-        setCo2Data(formattedCo2Data);
-        setRealTimeData(homepageData.realTimeData);
+        setCo2Data({
+          yearlyData: {
+            co2: formattedCo2Data
+          }
+        });
+        console.log('Setting real-time data:', homepageData.realTimeData);
+        
+        // Get the most recent CO2 value from yearly data if realTimeData.co2 is not available
+        const mostRecentCo2 = formattedCo2Data.length > 0 
+          ? formattedCo2Data[formattedCo2Data.length - 1].value 
+          : null;
+
+        // Always use the CO2 value from the first working sensor (sensor-001)
+        setRealTimeData({
+          temperature: homepageData.realTimeData.temperature,
+          pm25: homepageData.realTimeData.pm25,
+          co2: homepageData.realTimeData.co2  // This is from sensor-001 which is working
+        });
+
+        // Use actual sensor counts from the backend
         setSensorCounts(homepageData.sensorCounts);
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
+        setError('Failed to load dashboard data. Please try again later.');
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchDashboardData();
+    // Set up polling for real-time updates every 5 minutes
+    const pollInterval = setInterval(fetchDashboardData, 5 * 60 * 1000);
+    return () => clearInterval(pollInterval);
   }, []);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div className="loading">Loading dashboard data...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="dashboard-container">
@@ -72,7 +102,10 @@ const DashboardPage = () => {
 
         {/* Bar Chart for CO2 */}
         <div className="chart-wrapper">
-          <BarChart data={co2Data} />
+          <BarChart data={{
+            realTimeData: realTimeData,
+            sensorCounts: sensorCounts
+          }} />
         </div>
       </div>
 
@@ -81,6 +114,7 @@ const DashboardPage = () => {
         <DashboardCards
           temperature={realTimeData.temperature}
           pm25={realTimeData.pm25}
+          co2={realTimeData.co2}
           totalSensors={sensorCounts.total}
           workingSensors={sensorCounts.working}
         />

@@ -96,9 +96,22 @@ async function getYearlyAverages(sensorId, year) {
         },
     };
 
+<<<<<<< HEAD
     try {
         const command = new QueryCommand(params);
         const data = await dynamoDB.send(command);
+=======
+      try {
+          const command = new QueryCommand(params);
+          const data = await dynamoDB.send(command);
+          console.log('Latest record from DynamoDB:', data.Items[0]); // Add logging
+          return data.Items[0] || null;
+      } catch (error) {
+          console.error("Error getting real-time data:", error);
+          throw error;
+      }
+  },
+>>>>>>> Dashboard-Hannah
 
         // Process monthly averages
         const monthlyData = {};

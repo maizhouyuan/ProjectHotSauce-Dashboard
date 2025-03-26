@@ -40,10 +40,26 @@
     display: flex;
     align-items: center;
     gap: 15px;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .card:hover {
+    transform: translateY(-2px);
   }
   
   .card-icon {
     font-size: 24px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f5;
+    border-radius: 50%;
+  }
+  
+  .card-content {
+    flex: 1;
   }
   
   .card-content h3 {
@@ -56,4 +72,31 @@
     margin: 5px 0 0;
     font-size: 24px;
     font-weight: bold;
+  }
+  
+  .card-status {
+    margin: 2px 0 0;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  /* Loading and Error States */
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 1.2rem;
+    color: #666;
+  }
+  
+  .error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 1.2rem;
+    color: #f44336;
+    text-align: center;
+    padding: 20px;
   }
