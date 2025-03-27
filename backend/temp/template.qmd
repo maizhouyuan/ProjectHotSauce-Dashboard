@@ -1,6 +1,7 @@
 ---
 title: "225 Building Environment Report"
 author: "NEU Seattle Devs (Hot Sauce)"
+date: today
 
 # Document Configuration
 format:
@@ -36,6 +37,10 @@ header-includes:
   - \definecolor{darkblue}{RGB}{32, 38, 115}
   - \usepackage{sectsty}
   - \sectionfont{\color{darkblue}}
+  - \usepackage{datetime}
+  - \date{\today}
+  - \usepackage[english]{babel}
+  - \renewcommand{\today}{\monthname[\the\month] \the\day, \the\year}
 ---
 
 
@@ -150,8 +155,8 @@ summary = df.groupby("Sensor Name").agg({
 # Sort the summary by sensor number
 sorted_summary = summary.reindex(sorted(summary.index, key=sensor_sort_key))
 print("\n\nSensor Data Summary")
-print(f"Start Time: {start_time}")
-print(f"End Time: {end_time}")
+
+print(f"Start Time: {start_time} | End Time: {end_time}")
 print(sorted_summary)
 
 ```

@@ -105,6 +105,10 @@
 \definecolor{darkblue}{RGB}{32, 38, 115}
 \usepackage{sectsty}
 \sectionfont{\color{darkblue}}
+\usepackage{datetime}
+\date{\today}
+\usepackage[english]{babel}
+\renewcommand{\today}{\monthname[\the\month] \the\day, \the\year}
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
@@ -164,7 +168,7 @@
 
 \title{225 Building Environment Report}
 \author{NEU Seattle Devs (Hot Sauce)}
-\date{}
+\date{2025-03-27}
 
 \begin{document}
 \maketitle
@@ -180,14 +184,13 @@
 
 
 Sensor Data Summary
-Start Time: 6:00
-End Time: 11:59
-                       Temperature     Humidity      CO2       PM2.5    
-                               min max      min max  min   max   min max
-Sensor Name                                                             
-Sensor 3 - Event Space          23  23       43  45  411   436     0   0
-Sensor 4 - Room 220             25  26       40  43  470  1054     0   0
-Sensor 6 - Room 216             24  24       41  43  454   518    10  10
+Start Time: 0:00 | End Time: 7:59
+                       Temperature     Humidity      CO2      PM2.5    
+                               min max      min max  min  max   min max
+Sensor Name                                                            
+Sensor 3 - Event Space          23  24       44  45  411  448     0   0
+Sensor 6 - Room 216             24  24       43  43  482  572    10  10
+Sensor 7 - Staff Space          21  24       45  50  472  586     0   0
 \end{verbatim}
 
 \section{Sensor Charts}\label{sensor-charts}
@@ -244,7 +247,7 @@ Sensor 6 - Room 216             24  24       41  43  454   518    10  10
 Score}\label{comfort-level-indoor-climate-score}
 
 \begin{verbatim}
-Indoor Comfort Score:  0.2
+Indoor Comfort Score:  0.17
 \end{verbatim}
 
 \section{\texorpdfstring{\textbf{Indoor Comfort Score (ICS)
