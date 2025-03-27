@@ -1,7 +1,7 @@
 ---
 title: "225 Building Environment Report"
 author: "NEU Seattle Devs (Hot Sauce)"
-date: "`r Sys.Date()`"
+date: today
 
 # Document Configuration
 format:
@@ -37,6 +37,10 @@ header-includes:
   - \definecolor{darkblue}{RGB}{32, 38, 115}
   - \usepackage{sectsty}
   - \sectionfont{\color{darkblue}}
+  - \usepackage{datetime}
+  - \date{\today}
+  - \usepackage[english]{babel}
+  - \renewcommand{\today}{\monthname[\the\month] \the\day, \the\year}
 ---
 
 
@@ -135,7 +139,7 @@ sensor_colors = [
 ]
 
 # Generate charts
-plot_metric("Temperature", "Temperature (°C)", "temperature_chart", sensor_colors)
+plot_metric("Temperature", "Temperature (°F)", "temperature_chart", sensor_colors)
 plot_metric("Humidity", "Humidity (%)", "humidity_chart", sensor_colors)
 plot_metric("CO2", "CO2 (ppm)", "co2_chart", sensor_colors)
 plot_metric("PM2.5", "PM2.5 (µg/m³)", "pm_chart", sensor_colors)
@@ -150,6 +154,9 @@ summary = df.groupby("Sensor Name").agg({
 
 # Sort the summary by sensor number
 sorted_summary = summary.reindex(sorted(summary.index, key=sensor_sort_key))
+print("\n\nSensor Data Summary")
+
+print(f"Start Time: {start_time} | End Time: {end_time}")
 print(sorted_summary)
 
 ```
@@ -172,35 +179,75 @@ print(sorted_summary)
 # Comfort Level & Indoor Climate Score
 
 ```{python}
-def calculate_penalty(value, optimal_range, penalty_factor):
-    if optimal_range[0] <= value <= optimal_range[1]:
-        return 0
-    return abs(value - sum(optimal_range)/2) * penalty_factor
+import numpy as np
+
+def sigmoid_penalty(value, optimal_range):
+    """Applies a smooth sigmoid penalty to deviations from the optimal range."""
+    lower, upper = optimal_range
+    mid = (lower + upper) / 2
+    range_width = ((upper - lower) / 2) / 1.8  # Adjusted to match Celsius scaling
+    
+    if lower <= value <= upper:
+        return 1  # Ideal conditions → No penalty
+    
+    # Sigmoid function for penalty: rapid drop-off for extreme deviations
+    deviation = min(abs(value - lower), abs(value - upper)) / range_width
+    return 1 / (1 + np.exp(deviation - 2))  # Sigmoid scales penalty from 1 (ideal) to ~0 (bad)
 
 def calculate_ics(sensor_df):
     weights = {"Temperature": 0.3, "Humidity": 0.2, "CO2": 0.3, "PM2.5": 0.2}
-    optimal_ranges = {"Temperature": (20, 25), "Humidity": (40, 60), "CO2": (400, 800), "PM2.5": (0, 12)}
-    penalty_factors = {"Temperature": 5, "Humidity": 2, "CO2": 1/10, "PM2.5": 2}
+    optimal_ranges = {"Temperature": (69.8, 77), "Humidity": (40, 60), "CO2": (400, 800), "PM2.5": (0, 12)}
 
     scores = []
     for _, row in sensor_df.iterrows():
-        penalties = {key: calculate_penalty(row[key], optimal_ranges[key], penalty_factors[key]) for key in weights}
-        ics = 100 - sum(weights[k] * penalties[k] for k in weights)
+        penalties = {key: sigmoid_penalty(row[key], optimal_ranges[key]) for key in weights}
+
+        # Compute weighted geometric mean to aggregate comfort levels
+        ics = 100 * np.prod([penalties[k] ** weights[k] for k in weights])  
         scores.append(ics)
-    return round(sum(scores)/len(scores), 2)
+
+    return round(sum(scores) / len(scores), 2)
 
 ics = calculate_ics(df)
-print("Indoor Comfort Score:", ics)
+print("Indoor Comfort Score: ", ics)
 ```
 
 
-**Comfort Levels:**
+# **Indoor Comfort Score (ICS) Calculation**
 
-- Excellent (90-100) ✅
-- Good (75-89) 🙂
-- Moderate (50-74) 😐
-- Poor (25-49) 😕
-- Unacceptable (0-24) ❌
+## **Comfort Levels**
+- **Excellent (90-100) ✅** – Ideal indoor conditions, highly comfortable.  
+- **Good (75-89) 🙂** – Slight deviations, but still comfortable.  
+- **Moderate (50-74) 😐** – Noticeable discomfort, but tolerable.  
+- **Poor (25-49) 😕** – Significant discomfort, action needed.  
+- **Unacceptable (0-24) ❌** – Severe discomfort, unhealthy conditions.  
+
+---
+
+## **Scoring Logic**
+The **Indoor Comfort Score (ICS)** is based on four key indoor environmental factors:  
+
+| **Factor**        | **Optimal Range** |
+|------------------|----------------|
+| **Temperature (°F)** | **69.8 - 77** |
+| **Humidity (%)**     | **40 - 60** |
+| **CO2 (ppm)**       | **400 - 800** |
+| **PM2.5 (µg/m³)**   | **0 - 12** |
+
+### **How the Score is Calculated**
+1️⃣ **Ideal Conditions:**  
+   - If a value falls **within the optimal range**, no penalty is applied.  
+
+2️⃣ **Penalty for Deviations:**  
+   - If a value is **outside the optimal range**, a **sigmoid-based penalty** is applied:  
+     - **Small deviations → minimal penalty**  
+     - **Larger deviations → exponentially stronger penalty**  
+
+3️⃣ **Final Score Calculation:**  
+   - The **Indoor Comfort Score (ICS)** is computed using a **weighted geometric mean**:  
+     - Ensures **no single factor dominates**  
+     - Balances **all environmental parameters proportionally**  
+     - Generates a **realistic comfort score**  
 
 ---
 
