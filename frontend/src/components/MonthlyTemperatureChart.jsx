@@ -201,8 +201,8 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
         return celsius;
     };
     
-    // Create chart options
-    const chartOptions = {
+    // Create chart options - base options without conversion
+    const baseOptions = {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
@@ -221,8 +221,8 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
             tooltip: {
                 callbacks: {
                     label: (context) => {
-                        let value = convertTemperature(context.parsed.y);
-                        return `${value.toFixed(1)}°${temperatureUnit}`;
+                        // Will apply conversion in final options
+                        return `${context.parsed.y.toFixed(1)}°${temperatureUnit}`;
                     }
                 }
             }
@@ -235,7 +235,8 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
                 },
                 ticks: {
                     callback: (value) => {
-                        return `${convertTemperature(value).toFixed(1)}°${temperatureUnit}`;
+                        // Will apply conversion in final options
+                        return `${value.toFixed(1)}°${temperatureUnit}`;
                     },
                     font: {
                         size: 11
@@ -268,7 +269,7 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
         return <div className="chart-empty">No temperature data available</div>;
     }
 
-    // For Fahrenheit, convert the data values
+    // Apply conversion to the data but not in the scales/tooltip callbacks
     const displayData = {
         ...chartData,
         datasets: chartData.datasets.map(dataset => ({
@@ -286,7 +287,7 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
             <Line 
                 key={`temp-chart-${Date.now()}`}
                 data={displayData} 
-                options={chartOptions}
+                options={baseOptions}  // Use base options without double conversion
                 ref={(reference) => {
                     // Store references for cleanup
                     chartRef.current = reference;
