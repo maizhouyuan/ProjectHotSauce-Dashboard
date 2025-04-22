@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ReportForm from '../components/ReportForm';
 import ReportView from '../components/ReportView';
+import '../styles/ReportCharts.css';
 
 const ReportsPage = () => {
   const [showReport, setShowReport] = useState(false);

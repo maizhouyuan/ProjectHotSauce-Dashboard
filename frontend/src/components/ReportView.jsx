@@ -1,14 +1,37 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
+import ReportCharts from './ReportCharts';
 import '../styles/ReportView.css';
+import '../styles/ReportCharts.css';
 
 const ReportView = ({ reportData, reportConfig, onBackToForm, handleDownloadPDF }) => {
   const { reportType, selectedSensors, dateRange, startTime, endTime } = reportConfig;
   const [sensorA, setSensorA] = useState(selectedSensors[0]);
   const [sensorB, setSensorB] = useState(selectedSensors[1]);
+  const [temperatureUnit, setTemperatureUnit] = useState('C'); // Default to Celsius
 
   const formatDate = (date) => {
     return format(date, 'MM/dd/yyyy');
+  };
+
+  // Convert temperature values based on selected unit
+  const convertTemperature = (celsius) => {
+    if (temperatureUnit === 'F') {
+      return (celsius * 9/5) + 32;
+    }
+    return celsius;
+  };
+
+  // Format temperature values for display with the correct unit
+  const formatTemperature = (celsius) => {
+    if (celsius === undefined || celsius === null) return 'N/A';
+    const temp = convertTemperature(parseFloat(celsius));
+    return `${temp.toFixed(1)}°${temperatureUnit}`;
+  };
+
+  // Toggle between Celsius and Fahrenheit
+  const toggleTemperatureUnit = () => {
+    setTemperatureUnit(prev => prev === 'C' ? 'F' : 'C');
   };
 
   return (
@@ -28,7 +51,30 @@ const ReportView = ({ reportData, reportConfig, onBackToForm, handleDownloadPDF 
         <p><strong>Selected Sensors:</strong> {selectedSensors.map(s => s.label).join(', ')}</p>
         <p><strong>Date Range:</strong> {formatDate(dateRange.startDate)} - {formatDate(dateRange.endDate)}</p>
         <p><strong>Time Range:</strong> {startTime} - {endTime}</p>
+
+        <div className="temperature-unit-toggle">
+          <span>Temperature Unit:</span>
+          <button 
+            className={`unit-button ${temperatureUnit === 'C' ? 'active' : ''}`}
+            onClick={() => setTemperatureUnit('C')}
+          >
+            °C
+          </button>
+          <button 
+            className={`unit-button ${temperatureUnit === 'F' ? 'active' : ''}`}
+            onClick={() => setTemperatureUnit('F')}
+          >
+            °F
+          </button>
+        </div>
       </div>
+
+      {/* Add charts visualization component */}
+      <ReportCharts 
+        reportData={reportData} 
+        sensorIds={reportType === 'individual' ? [selectedSensors[0]] : selectedSensors}
+        temperatureUnit={temperatureUnit}
+      />
 
       {reportType === 'individual' ? (
         <div className="sensor-table-wrapper">
@@ -37,7 +83,7 @@ const ReportView = ({ reportData, reportConfig, onBackToForm, handleDownloadPDF 
               <thead>
                 <tr>
                   <th>Timestamp</th>
-                  <th>Temperature (°C)</th>
+                  <th>Temperature (°{temperatureUnit})</th>
                   <th>CO2 (ppm)</th>
                   <th>PM2.5</th>
                   <th>Humidity (%)</th>
@@ -49,7 +95,7 @@ const ReportView = ({ reportData, reportConfig, onBackToForm, handleDownloadPDF 
                   .map((data, index) => (
                     <tr key={index}>
                       <td>{data.Timestamp}</td>
-                      <td>{data.Temperature}</td>
+                      <td>{formatTemperature(data.Temperature)}</td>
                       <td>{data.CO2}</td>
                       <td>{data["PM2.5"]}</td>
                       <td>{data.Humidity}</td>
@@ -105,7 +151,7 @@ const ReportView = ({ reportData, reportConfig, onBackToForm, handleDownloadPDF 
                     <thead>
                       <tr>
                         <th>Timestamp</th>
-                        <th>Temperature (°C)</th>
+                        <th>Temperature (°{temperatureUnit})</th>
                         <th>CO2 (ppm)</th>
                         <th>PM2.5</th>
                         <th>Humidity (%)</th>
@@ -117,7 +163,7 @@ const ReportView = ({ reportData, reportConfig, onBackToForm, handleDownloadPDF 
                         .map((data, index) => (
                           <tr key={index}>
                             <td>{data.Timestamp}</td>
-                            <td>{data.Temperature}</td>
+                            <td>{formatTemperature(data.Temperature)}</td>
                             <td>{data.CO2}</td>
                             <td>{data["PM2.5"]}</td>
                             <td>{data.Humidity}</td>
