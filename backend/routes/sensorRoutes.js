@@ -60,4 +60,59 @@ router.get('/:id/history', async (req, res) => {
   }
 });
 
+// Get monthly average temperature data
+router.get('/monthly-temperatures', async (req, res) => {
+  try {
+    console.log('Fetching monthly temperature data');
+    
+    // Get current year
+    const currentYear = new Date().getFullYear().toString();
+    console.log('Current year:', currentYear);
+    
+    // Use existing DynamoDB function to get yearly averages for temperature
+    const sensors = await getAllSensors();
+    
+    // Track monthly data across all sensors
+    const monthlyData = {};
+    
+    // Process all sensors
+    for (const sensor of sensors) {
+      try {
+        // Get yearly temperature data for this sensor
+        const sensorYearlyData = await dynamodb.getYearlyAverages(sensor.id, currentYear);
+        
+        if (sensorYearlyData && sensorYearlyData.length > 0) {
+          // Process each month's data
+          sensorYearlyData.forEach(monthData => {
+            if (!monthlyData[monthData.month]) {
+              monthlyData[monthData.month] = { tempSum: 0, count: 0 };
+            }
+            
+            monthlyData[monthData.month].tempSum += monthData.avgTemperature;
+            monthlyData[monthData.month].count += 1;
+          });
+        }
+      } catch (sensorError) {
+        console.error(`Error processing sensor ${sensor.id} data:`, sensorError);
+        // Continue with other sensors
+      }
+    }
+    
+    // Convert to array format for the chart
+    const result = Object.entries(monthlyData).map(([month, data]) => ({
+      month,
+      avgTemperature: data.tempSum / data.count
+    }));
+    
+    // Sort chronologically
+    result.sort((a, b) => a.month.localeCompare(b.month));
+    
+    console.log(`Returning ${result.length} monthly temperature records`);
+    res.json(result);
+  } catch (error) {
+    console.error('Error in GET /sensors/monthly-temperatures:', error);
+    res.status(500).json({ error: 'Failed to fetch monthly temperature data' });
+  }
+});
+
 module.exports = router; 

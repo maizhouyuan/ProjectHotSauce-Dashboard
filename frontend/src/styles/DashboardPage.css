@@ -1,0 +1,525 @@
+/* Main Dashboard Container */
+.dashboard-container {
+    background-color: white;
+    margin: 0;
+    padding: 1.5rem;
+    width: 100%;
+  }
+  
+  /* Dashboard Header */
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .dashboard-header h2 {
+    color: #333;
+    font-size: 1.5rem;
+    margin: 0;
+  }
+  
+  /* Temperature Unit Toggle */
+  .temperature-unit-toggle {
+    display: flex;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+  }
+  
+  .unit-button {
+    padding: 0.5rem 1rem;
+    background: #f0f0f0;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+  }
+  
+  .unit-button:first-child {
+    border-right: 1px solid #ddd;
+  }
+  
+  .unit-button.active {
+    background: #b22222;
+    color: white;
+  }
+  
+  /* Dashboard Layout Grid */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+  }
+  
+  .chart-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .chart-container {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .chart-container h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: #444;
+  }
+  
+  .cards-section {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Custom Chart Styles */
+  .custom-chart {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    padding: 10px 0;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    display: flex;
+    overflow: hidden;
+  }
+  
+  /* Temperature Chart Styles */
+  .chart-y-axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px;
+    font-size: 12px;
+    color: #666;
+    width: 40px;
+  }
+  
+  .chart-content {
+    flex-grow: 1;
+    height: 100%;
+    padding: 10px 0;
+    position: relative;
+  }
+  
+  .data-line {
+    display: flex;
+    height: 80%;
+    width: 100%;
+    margin-bottom: 20px;
+    align-items: flex-end;
+    position: relative;
+  }
+  
+  .data-point-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    position: relative;
+  }
+  
+  .data-point {
+    transition: all 0.3s ease;
+  }
+  
+  .data-label {
+    font-size: 11px;
+    color: #666;
+    margin-top: 5px;
+    text-align: center;
+    position: absolute;
+    bottom: -20px;
+    transform: rotate(-45deg);
+    transform-origin: top left;
+    width: 100%;
+    white-space: nowrap;
+  }
+  
+  /* CO2 Chart Styles */
+  .co2-chart-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 80%;
+    padding: 10px 20px 20px 10px;
+    justify-content: space-around;
+  }
+  
+  .co2-bar-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    height: 30px;
+  }
+  
+  .co2-bar-label {
+    width: 30px;
+    font-size: 12px;
+    color: #666;
+    text-align: right;
+    padding-right: 10px;
+    font-weight: 500;
+  }
+  
+  .co2-bar-wrapper {
+    flex-grow: 1;
+    height: 100%;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .co2-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+  
+  .co2-value {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #333;
+    font-weight: 500;
+  }
+  
+  .co2-location {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #fff;
+    font-weight: 500;
+    text-shadow: 0 0 3px rgba(0,0,0,0.5);
+    max-width: 60%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .threshold-lines {
+    position: absolute;
+    top: 0;
+    left: 40px; /* Adjust based on label width */
+    right: 20px;
+    height: calc(80% + 10px);
+    pointer-events: none;
+  }
+  
+  .threshold-line {
+    position: absolute;
+    height: 100%;
+    width: 0;
+    border-left: 2px dashed;
+    top: 10px;
+  }
+  
+  .threshold-line .threshold-label {
+    position: absolute;
+    bottom: -25px;
+    left: -15px;
+    font-size: 10px;
+    color: #666;
+  }
+  
+  .threshold-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 8px;
+    background-color: #f8f8f8;
+    border-radius: 6px;
+  }
+  
+  .threshold-item {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+  }
+  
+  .threshold-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    margin-right: 4px;
+  }
+  
+  .threshold-label {
+    color: #555;
+    font-weight: 500;
+  }
+  
+  .chart-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #666;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    font-size: 14px;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  /* Dashboard Cards Styling */
+  .dashboard-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .dashboard-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1.25rem;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+  
+  .dashboard-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+  
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .card-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #666;
+    font-weight: 500;
+  }
+  
+  .card-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 1.5rem;
+  }
+  
+  .temperature-icon {
+    background-color: rgba(255, 152, 0, 0.1);
+    color: #ff9800;
+  }
+  
+  .co2-icon {
+    background-color: rgba(76, 175, 80, 0.1);
+    color: #4caf50;
+  }
+  
+  .pm25-icon {
+    background-color: rgba(33, 150, 243, 0.1);
+    color: #2196f3;
+  }
+  
+  .sensor-icon {
+    background-color: rgba(156, 39, 176, 0.1);
+    color: #9c27b0;
+  }
+  
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .current-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+  
+  .status-indicator {
+    padding: 0.25rem 1rem;
+    border-radius: 1rem;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    display: inline-block;
+  }
+  
+  .status-text {
+    font-size: 1.25rem;
+    color: #555;
+    margin-bottom: 0.75rem;
+  }
+  
+  .highlight {
+    font-weight: 700;
+    color: #333;
+  }
+  
+  .sensor-status-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #eee;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .sensor-status-progress {
+    height: 100%;
+    transition: width 0.3s ease;
+  }
+  
+  /* Loading State */
+  .dashboard-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 50vh;
+    width: 100%;
+  }
+  
+  .loading-spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #b22222;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  /* Error State */
+  .dashboard-error {
+    text-align: center;
+    padding: 40px;
+    color: #d32f2f;
+  }
+  
+  .dashboard-error button {
+    margin-top: 20px;
+    padding: 8px 16px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .dashboard-error button:hover {
+    background-color: #388e3c;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 1024px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .dashboard-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .temperature-unit-toggle {
+      width: 100%;
+    }
+    
+    .unit-button {
+      flex: 1;
+    }
+    
+    .custom-chart {
+      height: 250px;
+    }
+    
+    .co2-bar-label {
+      width: 25px;
+      font-size: 10px;
+    }
+    
+    .co2-value, .co2-location {
+      font-size: 10px;
+    }
+    
+    .chart-y-axis {
+      width: 30px;
+      font-size: 10px;
+    }
+    
+    .data-label {
+      font-size: 9px;
+    }
+    
+    .dashboard-cards {
+      grid-template-columns: 1fr;
+    }
+    
+    .current-value {
+      font-size: 1.5rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .dashboard-container {
+      padding: 1rem;
+    }
+    
+    .threshold-legend {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+    }
+  }
+
+  .co2-chart-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .co2-status-badge {
+    position: absolute;
+    right: 80px; /* Adjust based on your layout */
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 500;
+    color: white;
+    text-transform: uppercase;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    white-space: nowrap;
+  }
+  
+  /* Responsive adjustments for status badge */
+  @media (max-width: 768px) {
+    .co2-status-badge {
+      display: none; /* Hide on small screens to avoid overlap */
+    }
+  }
