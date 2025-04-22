@@ -36,6 +36,36 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.temperature-unit-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.temperature-unit-toggle span {
+  font-weight: 500;
+  color: #555;
+}
+
+.unit-button {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  background: white;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.unit-button.active {
+  background: #b22222;
+  color: white;
+  border-color: #b22222;
+}
+
 .summary-section h3 {
   font-size: 1.25rem;
   margin-bottom: 1rem;

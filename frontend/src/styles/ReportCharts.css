@@ -1,0 +1,73 @@
+.report-charts {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .report-charts h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+  }
+  
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .chart-container {
+    background: white;
+    border-radius: 8px;
+    padding: 1.25rem;
+    height: 280px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    position: relative;
+  }
+  
+  .chart-title {
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    color: #444;
+    margin-bottom: 10px;
+    position: absolute;
+    top: 5px;
+    left: 0;
+    right: 0;
+  }
+  
+  /* Make the chart areas stand out more */
+  .charts-grid canvas {
+    margin-top: 5px;
+    background-color: #fcfcfc;
+    border-radius: 4px;
+  }
+  
+  /* Add help icon for future tooltip functionality */
+  .chart-container .help-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 16px;
+    color: #999;
+    cursor: pointer;
+  }
+  
+  .chart-container .help-icon:hover {
+    color: #666;
+  }
+  
+  @media (max-width: 992px) {
+    .charts-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .chart-container {
+      height: 320px; /* Taller on mobile */
+    }
+  }
