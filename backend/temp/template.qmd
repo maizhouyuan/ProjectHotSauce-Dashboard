@@ -75,6 +75,9 @@ os.makedirs(output_dir, exist_ok=True)
 # Load data
 df = pd.read_csv("sensor_data.csv")
 
+# Convert Temperature from Celsius to Fahrenheit
+df['Temperature'] = df['Temperature'] * 9/5 + 32
+
 # Replace Sensor IDs with Names
 df['Sensor Name'] = df['Sensor ID'].map(sensor_name_map).fillna(df['Sensor ID'])
 
@@ -154,9 +157,8 @@ summary = df.groupby("Sensor Name").agg({
 
 # Sort the summary by sensor number
 sorted_summary = summary.reindex(sorted(summary.index, key=sensor_sort_key))
-print("\n\nSensor Data Summary")
-
-print(f"Start Time: {start_time} | End Time: {end_time}")
+print("\n\nSensor Data Summary\n")
+print(f"Start Time: {start_time} | End Time: {end_time}\n")
 print(sorted_summary)
 
 ```
@@ -227,12 +229,12 @@ print("Indoor Comfort Score: ", ics)
 ## **Scoring Logic**
 The **Indoor Comfort Score (ICS)** is based on four key indoor environmental factors:  
 
-| **Factor**        | **Optimal Range** |
-|------------------|----------------|
-| **Temperature (°F)** | **69.8 - 77** |
-| **Humidity (%)**     | **40 - 60** |
-| **CO2 (ppm)**       | **400 - 800** |
-| **PM2.5 (µg/m³)**   | **0 - 12** |
+| **Factor**          | **Optimal Range** | **Source**                                   |
+|---------------------|-------------------|----------------------------------------------|
+| **Temperature (°F)**| **69.8 - 77**     | **ASHRAE Standard 55**                       |
+| **Humidity (%)**    | **40 - 60**       | **ASHRAE Standard 55**                       |
+| **CO2 (ppm)**       | **400 - 800**     | **EPA & ASHRAE Guidelines**                  |
+| **PM2.5 (µg/m³)**   | **0 - 12**        | **U.S. EPA Air Quality Index (AQI)**         |
 
 ### **How the Score is Calculated**
 1️⃣ **Ideal Conditions:**  
