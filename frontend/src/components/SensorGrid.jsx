@@ -5,6 +5,7 @@ const SensorGrid = ({ onSensorClick, temperatureUnit, onTemperatureUnitChange })
   const [sensors, setSensors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeSensorCount, setActiveSensorCount] = useState(0);
 
   // Mapping of sensor IDs to display numbers
   const sensorNumberMapping = {
@@ -50,7 +51,8 @@ const SensorGrid = ({ onSensorClick, temperatureUnit, onTemperatureUnitChange })
           throw new Error('Failed to fetch sensors');
         }
         const data = await response.json();
-        // 更新传感器名称
+        
+        // Update sensor names and count active sensors
         const updatedData = data.map(sensor => {
           if (sensor.id === 'fcf5c497654a') {
             return { ...sensor, name: 'Event Space' };
@@ -60,8 +62,18 @@ const SensorGrid = ({ onSensorClick, temperatureUnit, onTemperatureUnitChange })
           }
           return sensor;
         });
+        
+        // Calculate active sensors (status === 'active')
+        const activeCount = updatedData.filter(sensor => sensor.status === 'active').length;
+        setActiveSensorCount(activeCount);
+        
         setSensors(updatedData);
         setLoading(false);
+        
+        // Update global state for any parent components that need this info
+        if (window.updateActiveSensorCount) {
+          window.updateActiveSensorCount(activeCount, updatedData.length);
+        }
       } catch (err) {
         console.error('Error fetching sensors:', err);
         setError('Failed to fetch sensors');

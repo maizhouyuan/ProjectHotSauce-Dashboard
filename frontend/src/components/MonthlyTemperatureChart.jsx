@@ -239,7 +239,7 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
                         return `${value.toFixed(1)}°${temperatureUnit}`;
                     },
                     font: {
-                        size: 11
+                        size: 12
                     }
                 }
             },
@@ -249,8 +249,9 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
                 },
                 ticks: {
                     font: {
-                        size: 11
-                    }
+                        size: 14  // Increase font size for month labels
+                    },
+                    color: '#333'  // Darker color for better visibility
                 }
             }
         },

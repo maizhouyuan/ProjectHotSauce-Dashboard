@@ -1,9 +1,120 @@
-.co2-chart {
+.dashboard-cards {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 1rem;
+  height: 100%;
 }
 
+.dashboard-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 1.25rem;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  flex: 1;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 3rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.card-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 1.5rem;
+}
+
+.temperature-icon {
+  background-color: rgba(255, 152, 0, 0.1);
+  color: #ff9800;
+}
+
+.co2-icon {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+}
+
+.pm25-icon {
+  background-color: rgba(33, 150, 243, 0.1);
+  color: #2196f3;
+}
+
+.sensor-icon {
+  background-color: rgba(156, 39, 176, 0.1);
+  color: #9c27b0;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.current-value {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.status-indicator {
+  padding: 0.25rem 1rem;
+  border-radius: 1rem;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.status-text {
+  font-size: 1.25rem;
+  color: #555;
+  margin-bottom: 0.75rem;
+}
+
+.highlight {
+  font-weight: 700;
+  color: #333;
+}
+
+.sensor-status-bar {
+  width: 100%;
+  height: 8px;
+  background-color: #eee;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.sensor-status-progress {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+/* Threshold Legend for CO2 Chart */
 .threshold-legend {
   display: flex;
   flex-wrap: wrap;
@@ -33,12 +144,33 @@
   font-weight: 500;
 }
 
-/* Additional styles for chart container */
-.chart-container canvas {
-  animation: fadeIn 0.5s ease-out;
+/* Media Queries for Responsive Design */
+@media (max-width: 768px) {
+  .current-value {
+    font-size: 1.75rem;
+  }
+  
+  .status-text {
+    font-size: 1.1rem;
+  }
+  
+  .card-icon {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.25rem;
+  }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@media (max-width: 480px) {
+  .dashboard-card {
+    padding: 1rem;
+  }
+  
+  .card-header h3 {
+    font-size: 0.9rem;
+  }
+  
+  .current-value {
+    font-size: 1.5rem;
+  }
 }
