@@ -8,7 +8,7 @@ const ReportView = ({ reportData, reportConfig, onBackToForm, handleDownloadPDF 
   const { reportType, selectedSensors, dateRange, startTime, endTime } = reportConfig;
   const [sensorA, setSensorA] = useState(selectedSensors[0]);
   const [sensorB, setSensorB] = useState(selectedSensors[1]);
-  const [temperatureUnit, setTemperatureUnit] = useState('C'); // Default to Celsius
+  const [temperatureUnit, setTemperatureUnit] = useState('F');
 
   const formatDate = (date) => {
     return format(date, 'MM/dd/yyyy');
@@ -36,35 +36,35 @@ const ReportView = ({ reportData, reportConfig, onBackToForm, handleDownloadPDF 
 
   return (
     <div className="report-view">
-      <button className="back-button" onClick={onBackToForm}>
-        ← Go Back
-      </button>
-      <button className="download-button" onClick={handleDownloadPDF}>
-        📄 Download Report as PDF
-      </button>
-
-      <h2>{reportType === 'individual' ? 'Individual' : 'Comparison'} Report</h2>
+      <div>
+        <button className="back-button" onClick={onBackToForm}>
+          ← Go Back
+        </button>
+      </div>
+      <div>
+        <button className="download-button" onClick={handleDownloadPDF}>
+          📄 Download Report as PDF
+        </button>
+      </div>
 
       <div className="summary-section">
+        <h2>{reportType === 'individual' ? 'Individual' : 'Comparison'} Report</h2>
         <h3>Summary</h3>
-        <p><strong>Report Type:</strong> {reportType}</p>
         <p><strong>Selected Sensors:</strong> {selectedSensors.map(s => s.label).join(', ')}</p>
         <p><strong>Date Range:</strong> {formatDate(dateRange.startDate)} - {formatDate(dateRange.endDate)}</p>
         <p><strong>Time Range:</strong> {startTime} - {endTime}</p>
-
         <div className="temperature-unit-toggle">
-          <span>Temperature Unit:</span>
-          <button 
-            className={`unit-button ${temperatureUnit === 'C' ? 'active' : ''}`}
-            onClick={() => setTemperatureUnit('C')}
-          >
-            °C
-          </button>
           <button 
             className={`unit-button ${temperatureUnit === 'F' ? 'active' : ''}`}
             onClick={() => setTemperatureUnit('F')}
           >
             °F
+          </button>
+          <button 
+            className={`unit-button ${temperatureUnit === 'C' ? 'active' : ''}`}
+            onClick={() => setTemperatureUnit('C')}
+          >
+            °C
           </button>
         </div>
       </div>

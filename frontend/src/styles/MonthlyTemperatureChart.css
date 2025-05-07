@@ -1,0 +1,43 @@
+.temperature-chart-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #666;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  font-size: 14px;
+  padding: 20px;
+}
+
+.chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #666;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  font-size: 14px;
+  padding: 20px;
+  text-align: center;
+}
+
+.temperature-chart-wrapper {
+  position: relative;
+  flex: 1;
+  min-height: 250px;
+  width: 100%;
+}
+
+.temperature-chart-wrapper canvas {
+  width: 100% !important;
+  height: 100% !important;
+}

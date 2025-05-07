@@ -7,12 +7,12 @@
 }
 
 .sensors-container {
-  width: calc(100% - 370px);
+  width: 100%;
   min-width: 0;
 }
 
 .sensor-detail-container {
-  width: 350px;
+  width: 1000px;
   min-width: 350px;
   background: white;
   border-radius: 8px;

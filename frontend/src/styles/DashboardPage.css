@@ -1,53 +1,32 @@
-/* Main Dashboard Container */
 .dashboard-container {
-  background-color: #f5f5f5;
   margin: 0;
   padding: 1.5rem;
   width: 100%;
   height: 100%;
-}
-
-/* Dashboard Header */
-.dashboard-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
+  flex-direction: column;
 }
 
-.dashboard-header h2 {
-  color: #333;
-  font-size: 1.5rem;
-  margin: 0;
-}
-
-/* Temperature Unit Toggle */
 .temperature-unit-toggle {
   display: flex;
-  border-radius: 4px;
-  overflow: hidden;
-  border: 1px solid #ddd;
+  gap: 5px;
 }
 
 .unit-button {
-  padding: 0.5rem 1rem;
-  background: #f0f0f0;
-  border: none;
+  padding: 8px 14px;
+  border: 1px solid #ddd;
+  background: white;
   cursor: pointer;
-  font-size: 0.85rem;
-  transition: all 0.2s ease;
-}
-
-.unit-button:first-child {
-  border-right: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
 }
 
 .unit-button.active {
   background: #b22222;
   color: white;
+  border-color: #b22222;
 }
 
-/* Dashboard Layout Grid */
 .dashboard-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -63,22 +42,32 @@
 }
 
 .chart-container {
-  background: white;
+  background: rgba(255, 255, 255, 0.95) !important; /* Increased opacity from 0.7 to 0.95 */
   border-radius: 8px;
   padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15); /* Stronger shadow */
+  height: 100%;
+  width: 98%;
   display: flex;
   flex-direction: column;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  transform: translateZ(0); /* Force hardware acceleration */
+  -webkit-transform: translateZ(0);
+}
+
+.chart-section .chart-container {
+  min-height: 0;
 }
 
 .chart-section .chart-container:first-child {
   flex: 1;
-  min-height: 250px;
+  min-height: 250px !important;
 }
 
 .chart-section .chart-container:last-child {
-  flex: 1.5;  /* Give more height to CO2 chart */
-  min-height: 400px;
+  flex: 1.5;
+  min-height: 400px !important;
 }
 
 .chart-container h3 {
@@ -101,135 +90,14 @@
   height: 100%;
 }
 
-/* Custom Chart Styles */
-.custom-chart {
-  position: relative;
-  width: 100%;
-  padding: 10px 0;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  display: flex;
-  overflow: hidden;
-  flex: 1;
+.dashboard-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
-/* CO2 Chart Styles */
-.co2-chart-content {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  justify-content: space-around;
-  overflow-y: auto;
-}
-
-.co2-bar-container {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-  height: 40px;
-}
-
-.co2-bar-label {
-  width: 40px;
-  font-size: 14px;
-  color: #666;
-  text-align: center;
-  padding-right: 5px;
-  font-weight: bold;
-}
-
-.co2-bar-wrapper {
-  flex-grow: 1;
-  height: 100%;
-  background-color: #f0f0f0;
-  border-radius: 4px;
-  position: relative;
-  overflow: hidden;
-}
-
-.co2-bar {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.5s ease;
-}
-
-.co2-value {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 14px;
-  color: #333;
-  font-weight: bold;
-}
-
-.co2-location {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 14px;
-  color: #fff;
-  font-weight: bold;
-  text-shadow: 0 0 3px rgba(0,0,0,0.7);
-  max-width: 80%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.threshold-lines {
-  position: absolute;
-  top: 0;
-  left: 50px; /* Adjust based on label width */
-  right: 20px;
-  height: 100%;
-  pointer-events: none;
-}
-
-.threshold-line {
-  position: absolute;
-  height: 100%;
-  width: 0;
-  border-left: 2px dashed;
-  top: 10px;
-}
-
-.threshold-line .threshold-label {
-  position: absolute;
-  bottom: -25px;
-  left: -15px;
-  font-size: 12px;
-  color: #666;
-}
-
-.threshold-legend {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 10px;
-  padding: 8px;
-  background-color: #f8f8f8;
-  border-radius: 6px;
-}
-
-.threshold-item {
-  display: flex;
-  align-items: center;
-  font-size: 12px;
-}
-
-.threshold-color {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
-  margin-right: 4px;
-}
-
-.threshold-label {
-  color: #555;
-  font-weight: 500;
+.dashboard-card:hover {
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .chart-empty {
@@ -238,27 +106,11 @@
   justify-content: center;
   height: 100%;
   color: #666;
-  background-color: #f9f9f9;
+  background-color: rgba(249, 249, 249, 0.7) !important;
   border-radius: 8px;
   font-size: 14px;
   padding: 20px;
   text-align: center;
-}
-
-/* Status badge styling */
-.co2-status-badge {
-  position: absolute;
-  right: 90px;
-  top: 50%;
-  transform: translateY(-50%);
-  padding: 5px 10px;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: bold;
-  color: white;
-  text-transform: uppercase;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  white-space: nowrap;
 }
 
 /* Loading State */
@@ -269,6 +121,8 @@
   justify-content: center;
   height: 50vh;
   width: 100%;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
 }
 
 .loading-spinner {
@@ -290,6 +144,8 @@
   text-align: center;
   padding: 40px;
   color: #d32f2f;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 8px;
 }
 
 .dashboard-error button {
@@ -315,12 +171,6 @@
   .chart-section .chart-container:last-child {
     min-height: 500px; /* Even more height on smaller screens */
   }
-  
-  .dashboard-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
 }
 
 @media (max-width: 768px) {
@@ -331,15 +181,4 @@
   .unit-button {
     flex: 1;
   }
-  
-  .custom-chart {
-    min-height: 500px;
-  }
-}
-
-.co2-chart-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  height: 100%;
 }
