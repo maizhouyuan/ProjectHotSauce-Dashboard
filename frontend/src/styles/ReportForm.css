@@ -1,8 +1,13 @@
 .report-form {
-  background-color: #b22222;
+  background-color: rgba(178, 34, 34, 0.85);
   padding: 2rem;
   border-radius: 15px;
   color: white;
+  width: 50%;
+  margin: auto;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .report-form h2 {
@@ -134,4 +139,15 @@
 .submit-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  .report-form {
+    width: 50% !important;
+    padding: 2rem !important;
+  }
+  
+  .select-container, .date-selector, .time-selector {
+    width: 100% !important;
+  }
 }

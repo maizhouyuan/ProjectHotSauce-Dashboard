@@ -11,6 +11,7 @@ import {
     Legend,
     Filler
 } from 'chart.js';
+import '../styles/MonthlyTemperatureChart.css';
 
 // Register required Chart.js components
 ChartJS.register(
@@ -43,7 +44,8 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
     }, [temperatureUnit]);
 
     useEffect(() => {
-        fetchMonthlyTemperatureData();
+        // Check if we already have cached data for this month
+        checkAndFetchMonthlyData();
         
         // Cleanup chart instance on component unmount
         return () => {
@@ -54,11 +56,43 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
         };
     }, []);
     
-    // Fetch real temperature data from homepage endpoint
-    const fetchMonthlyTemperatureData = async () => {
+    // Check localStorage for cached data and fetch only if needed
+    const checkAndFetchMonthlyData = () => {
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth();
+        
+        // Create a cache key using year and month
+        const cacheKey = `monthlyTempData_${currentYear}_${currentMonth}`;
+        
+        try {
+            // Try to get cached data
+            const cachedData = localStorage.getItem(cacheKey);
+            
+            if (cachedData) {
+                // Parse and use the cached data
+                const parsedData = JSON.parse(cachedData);
+                console.log('Using cached monthly temperature data from localStorage');
+                setChartData(parsedData);
+                setIsLoading(false);
+            } else {
+                // No cache found, fetch new data
+                console.log('No cached data found for this month, fetching new data');
+                fetchMonthlyTemperatureData(cacheKey);
+            }
+        } catch (error) {
+            // If any error occurs with localStorage, fetch data
+            console.error('Error accessing localStorage:', error);
+            fetchMonthlyTemperatureData(cacheKey);
+        }
+    };
+    
+    // Fetch real temperature data from the API
+    const fetchMonthlyTemperatureData = async (cacheKey) => {
         setIsLoading(true);
         try {
-            const response = await fetch('/api/homepage/data');
+            // Use the dedicated endpoint for monthly temperature data
+            const response = await fetch('/api/homepage/monthly-temperature');
             
             if (!response.ok) {
                 throw new Error(`API error: ${response.status}`);
@@ -67,25 +101,85 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
             const data = await response.json();
             console.log('Monthly temperature API response:', data);
             
-            if (data && data.sensors && data.sensors.length > 0) {
-                // Process the data to get monthly averages across all sensors
-                processRealData(data.sensors);
+            if (data && data.length > 0) {
+                // Process the API data
+                const processedData = processApiData(data);
+                
+                // Cache the processed data for this month
+                try {
+                    localStorage.setItem(cacheKey, JSON.stringify(processedData));
+                    console.log('Cached monthly temperature data to localStorage');
+                } catch (cacheError) {
+                    console.warn('Failed to cache monthly data:', cacheError);
+                }
+                
+                setChartData(processedData);
             } else {
-                throw new Error('No sensor data available');
+                // Try the homepage data API as fallback
+                const homepageResponse = await fetch('/api/homepage/data');
+                
+                if (!homepageResponse.ok) {
+                    throw new Error(`Homepage API error: ${homepageResponse.status}`);
+                }
+                
+                const homepageData = await homepageResponse.json();
+                
+                if (homepageData && homepageData.sensors && homepageData.sensors.length > 0) {
+                    // Process sensor data to get monthly averages
+                    const processedData = processHomepageData(homepageData.sensors);
+                    
+                    // Cache the processed data for this month
+                    try {
+                        localStorage.setItem(cacheKey, JSON.stringify(processedData));
+                        console.log('Cached monthly temperature data to localStorage');
+                    } catch (cacheError) {
+                        console.warn('Failed to cache monthly data:', cacheError);
+                    }
+                    
+                    setChartData(processedData);
+                } else {
+                    throw new Error('No data available');
+                }
             }
         } catch (error) {
             console.error('Error fetching monthly temperature data:', error);
             setError(error.message);
             
-            // Fallback to demo data
+            // Fallback to demo data if both API calls fail
             generateDemoData();
         } finally {
             setIsLoading(false);
         }
     };
     
-    // Process real sensor data 
-    const processRealData = (sensors) => {
+    // Process data from the dedicated monthly temperature endpoint
+    const processApiData = (data) => {
+        // Extract month names and temperature values
+        const monthNames = data.map(item => {
+            // Convert YYYY-MM format to short month name
+            const date = new Date(item.month);
+            return date.toLocaleString('default', { month: 'short' });
+        });
+        
+        const temperatures = data.map(item => item.avgTemperature);
+        
+        return {
+            labels: monthNames,
+            datasets: [
+                {
+                    label: `Monthly Average Temperature (°C)`,
+                    data: temperatures,
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                    tension: 0.4
+                }
+            ]
+        };
+    };
+    
+    // Process data from the homepage API
+    const processHomepageData = (sensors) => {
         // Track temperature data by month across all sensors
         const temperatureByMonth = {};
         let monthCount = 0;
@@ -123,8 +217,7 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
         
         if (monthCount === 0) {
             console.warn('No temperature data found in sensors');
-            generateDemoData();
-            return;
+            return generateDemoData(true);
         }
         
         // Convert to array and calculate averages
@@ -143,11 +236,11 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
         
         const temperatures = processedData.map(item => item.value);
         
-        setChartData({
+        return {
             labels: monthNames,
             datasets: [
                 {
-                    label: `Monthly Average Temperature (°${temperatureUnit})`,
+                    label: `Monthly Average Temperature (°C)`,
                     data: temperatures,
                     borderColor: 'rgb(75, 192, 192)',
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
@@ -155,11 +248,11 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
                     tension: 0.4
                 }
             ]
-        });
+        };
     };
     
-    // Generate demo data if API fails
-    const generateDemoData = () => {
+    // Generate demo data if both API calls fail
+    const generateDemoData = (returnData = false) => {
         // Current year and month
         const currentYear = new Date().getFullYear();
         const currentMonth = new Date().getMonth(); // 0-11
@@ -178,11 +271,11 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
         const labels = months.slice(0, currentMonth + 1);
         const data = temperatureData.slice(0, currentMonth + 1);
         
-        setChartData({
+        const demoData = {
             labels,
             datasets: [
                 {
-                    label: `Monthly Average Temperature (°${temperatureUnit})`,
+                    label: `Monthly Average Temperature (°C)`,
                     data,
                     borderColor: 'rgb(75, 192, 192)',
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
@@ -190,7 +283,13 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
                     tension: 0.4
                 }
             ]
-        });
+        };
+        
+        if (returnData) {
+            return demoData;
+        } else {
+            setChartData(demoData);
+        }
     };
     
     // Convert temperatures if needed
@@ -221,7 +320,6 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
             tooltip: {
                 callbacks: {
                     label: (context) => {
-                        // Will apply conversion in final options
                         return `${context.parsed.y.toFixed(1)}°${temperatureUnit}`;
                     }
                 }
@@ -235,7 +333,6 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
                 },
                 ticks: {
                     callback: (value) => {
-                        // Will apply conversion in final options
                         return `${value.toFixed(1)}°${temperatureUnit}`;
                     },
                     font: {
@@ -251,11 +348,20 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
                     font: {
                         size: 14  // Increase font size for month labels
                     },
-                    color: '#333'  // Darker color for better visibility
+                    color: '#333',  // Darker color for better visibility
+                    maxRotation: 45, // Rotate labels to prevent overlap
+                    minRotation: 45, // Rotate labels to prevent overlap
+                    autoSkip: false, // Don't skip labels
+                    padding: 10 // Add padding for better spacing
                 }
             }
         },
-        animation: false // Disable animations to avoid canvas issues
+        animation: false, // Disable animations to avoid canvas issues
+        layout: {
+            padding: {
+                bottom: 20 // Add more bottom padding for rotated labels
+            }
+        }
     };
     
     if (isLoading) {
@@ -283,20 +389,21 @@ const MonthlyTemperatureChart = ({ temperatureUnit }) => {
     };
 
     return (
-        <div style={{ height: '300px', width: '100%', position: 'relative' }}>
-            {/* Each render gets a new canvas with a unique key */}
-            <Line 
-                key={`temp-chart-${Date.now()}`}
-                data={displayData} 
-                options={baseOptions}  // Use base options without double conversion
-                ref={(reference) => {
-                    // Store references for cleanup
-                    chartRef.current = reference;
-                    if (reference) {
-                        chartInstanceRef.current = reference;
-                    }
-                }}
-            />
+        <div className="temperature-chart-container">
+            <div className="temperature-chart-wrapper">
+                <Line 
+                    key={`temp-chart-${Date.now()}`}
+                    data={displayData} 
+                    options={baseOptions}
+                    ref={(reference) => {
+                        // Store references for cleanup
+                        chartRef.current = reference;
+                        if (reference) {
+                            chartInstanceRef.current = reference;
+                        }
+                    }}
+                />
+            </div>
         </div>
     );
 };

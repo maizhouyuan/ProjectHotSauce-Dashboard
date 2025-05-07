@@ -1,7 +1,16 @@
 import React from 'react';
 import '../styles/DashboardCards.css';
 
-const DashboardCards = ({ temperature, pm25, co2, totalSensors, workingSensors, temperatureUnit }) => {
+const DashboardCards = ({ 
+  temperature, 
+  pm25, 
+  co2, 
+  humidity, 
+  timestamp, 
+  totalSensors, 
+  workingSensors, 
+  temperatureUnit 
+}) => {
   // Convert Celsius to Fahrenheit if needed
   const displayTemperature = temperatureUnit === 'F' && temperature !== null 
     ? ((temperature * 9/5) + 32).toFixed(1) 
@@ -25,7 +34,15 @@ const DashboardCards = ({ temperature, pm25, co2, totalSensors, workingSensors, 
     return { status: 'very-high', color: '#F44336', label: 'Very High' };
   };
 
+  // Format timestamp
+  const formatTimestamp = (timestamp) => {
+    if (!timestamp) return 'Not Available';
+    const date = new Date(timestamp);
+    return date.toLocaleString();
+  };
+
   const co2Status = getCo2Status(co2);
+  const lastUpdated = formatTimestamp(timestamp);
 
   return (
     <div className="dashboard-cards">
@@ -37,6 +54,9 @@ const DashboardCards = ({ temperature, pm25, co2, totalSensors, workingSensors, 
         </div>
         <div className="card-content">
           <div className="current-value">{displayTemperature} °{temperatureUnit}</div>
+          {humidity !== null && humidity !== undefined && (
+            <div className="additional-info">Humidity: {humidity}%</div>
+          )}
         </div>
       </div>
 
@@ -66,6 +86,9 @@ const DashboardCards = ({ temperature, pm25, co2, totalSensors, workingSensors, 
           <div className="current-value">
             {pm25 !== undefined && pm25 !== null ? `${pm25} µg/m³` : 'N/A'}
           </div>
+          <div className="last-updated">
+            Last Updated: {lastUpdated}
+          </div>
         </div>
       </div>
 
@@ -84,7 +107,9 @@ const DashboardCards = ({ temperature, pm25, co2, totalSensors, workingSensors, 
               className="sensor-status-progress" 
               style={{ 
                 width: totalSensors ? `${(workingSensors / totalSensors) * 100}%` : '0%',
-                backgroundColor: workingSensors === totalSensors ? '#4CAF50' : '#FFC107'
+                backgroundColor: workingSensors === totalSensors ? '#4CAF50' : 
+                  (workingSensors >= totalSensors * 0.75) ? '#8BC34A' :
+                  (workingSensors >= totalSensors * 0.5) ? '#FFC107' : '#F44336'
               }}
             ></div>
           </div>

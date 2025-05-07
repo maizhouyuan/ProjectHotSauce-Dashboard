@@ -307,8 +307,6 @@ const ReportCharts = ({ reportData, sensorIds, temperatureUnit }) => {
 
   return (
     <div className="report-charts">
-      <h3>Sensor Metrics Visualization</h3>
-      
       <div className="charts-grid">
         <div className="chart-container">
           <div className="chart-title">Temperature (°{temperatureUnit}) Over Time</div>

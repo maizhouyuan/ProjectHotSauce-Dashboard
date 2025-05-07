@@ -10,20 +10,31 @@ const LeftNavBar = () => {
       <div className="logo-container">
         <img src={nuLogo} alt="NU Logo" className="nu-logo" />
       </div>
-
+      
       {/* Navigation links */}
       <nav className="nav-links">
-        <NavLink to="/dashboard" className="nav-item" activeClassName="active">
+        <NavLink 
+          to="/dashboard" 
+          className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
+        >
           Dashboard
         </NavLink>
-        <NavLink to="/sensors" className="nav-item" activeClassName="active">
+        
+        <NavLink 
+          to="/sensors" 
+          className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
+        >
           Sensors
         </NavLink>
-        <NavLink to="/reports" className="nav-item" activeClassName="active">
+        
+        <NavLink 
+          to="/reports" 
+          className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
+        >
           Reports
         </NavLink>
       </nav>
-
+      
       {/* Bottom buttons */}
       <div className="bottom-buttons">
         <button className="settings-button">⚙️</button>
